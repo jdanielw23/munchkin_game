@@ -4,15 +4,23 @@
 * Created 10-29-15	JDW
 * This is the super structure for all of the different types of cards
 * REVISION HISTORY:
-*
+* 11-01-15			RSR		Added string header to fix compilation errors
 */
 
 #pragma once
+
+#include <string>
+
+using namespace std;
+
 struct Card	{
 	enum CardType {DOOR, TREASURE};
 	string title;
 	string description;
 	CardType cardType;
+
+	Card();
+	~Card();
 };
 
 struct MonsterCard : Card {

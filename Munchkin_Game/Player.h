@@ -4,14 +4,15 @@
 * Created 10-29-15	JDW
 * This class contains the main logic for a player in the game.
 * REVISION HISTORY:
-* 
+* 11-01-15			RSR		Renamed variables to prevent conflicts with accessor names.
+* 11-01-15			RSR		Changed include to card.h instead of card.cpp
 */
 
 #pragma once
 #include <string>
 #include <vector>
 #include <map>
-#include "Card.cpp"
+#include "Card.h"
 
 using namespace std;
 
@@ -28,10 +29,10 @@ private:
 	vector<RaceCard::RaceType> races;
 	map<ItemCard::SlotType, bool> equippedSlots;
 
-	bool isSuperMunchkin;	//a card that allows two classes
-	bool isHalfBreed;		//a card that allows two races
-	bool hasHireling;		//a card that allows an extra item
-	bool inBattle;
+	bool bIsSuperMunchkin;	//a card that allows two classes
+	bool bIsHalfBreed;		//a card that allows two races
+	bool bHasHireling;		//a card that allows an extra item
+	bool bInBattle;
 
 	int gear;
 	int level;
@@ -49,10 +50,10 @@ public:
 	~Player();
 
 	//ACCESSORS
-	bool isSuperMunchkin() { return isSuperMunchkin;  }
-	bool isHalfBreed() { return isHalfBreed; }
-	bool hasHireling() { return hasHireling; }
-	bool isInBattle() { return inBattle; }
+	bool isSuperMunchkin() { return bIsSuperMunchkin;  }
+	bool isHalfBreed() { return bIsHalfBreed; }
+	bool hasHireling() { return bHasHireling; }
+	bool isInBattle() { return bInBattle; }
 	int getGear() { return gear; }
 	int getLevel() { return level; }
 	int getBattleStrength() { return (gear + level); }
