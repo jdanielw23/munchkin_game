@@ -32,13 +32,13 @@ struct MonsterCard : Card {
 		LOSE_SMALL_ITEM,
 		LOSE_HAND,
 		LOSE_PLUS_THREE_ITEM,
-		LOSE_UOO,
+		LOSE_ONE_SHOT,
 		LOSE_HIGHEST_BONUS,
 		LOSE_TWO_LEVELS,
 		LOSE_HAND_ITEMS,
 		LOSE_HAND_ITEM,
 		LOSE_ARMOR,
-		LOSE_BIT_ITEM,
+		LOSE_BIG_ITEM,
 		LOSE_TWO_ITEMS
 	};
 
@@ -79,7 +79,7 @@ struct ItemCard : Card {
 	int bonus;
 };
 
-struct UseOnceOnlyCard : Card {
+struct OneShotCard : Card {
 	bool goUpLevel;
 	int value;
 	int bonus;
