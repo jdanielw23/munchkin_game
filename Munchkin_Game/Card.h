@@ -15,32 +15,34 @@ using namespace std;
 
 struct Card	{
 	enum CardType {DOOR, TREASURE};
+	enum ClassType { THIEF, CLERIC, WIZARD, WARRIOR };
+	enum RaceType { HALFLING, ELF, DWARF };
+	enum SlotType { ONE_HAND, TWO_HANDS, HEADGEAR, FOOTGEAR, ARMOR };
+	enum Gender { MALE, FEMALE };
+	enum BadStuff {
+		LOSE_FOOTGEAR,	//0
+		LOSE_HEADGEAR,	//1
+		LOSE_LEVEL,		//2
+		DEATH,			//3
+		LOSE_SMALL_ITEM,	//4
+		LOSE_HAND,			//5
+		LOSE_PLUS_THREE_ITEM,	//6
+		LOSE_ONE_SHOT,		//7
+		LOSE_HIGHEST_BONUS,	//8
+		LOSE_TWO_LEVELS,	//9
+		LOSE_HAND_ITEMS,	//10
+		LOSE_HAND_ITEM,		//11
+		LOSE_ARMOR,		//12
+		LOSE_BIG_ITEM,	//13
+		LOSE_TWO_ITEMS	//14
+	};
+
 	string title;
 	string description;
 	CardType cardType;
-
-	Card();
-	~Card();
 };
 
 struct MonsterCard : Card {
-	enum BadStuff {
-		LOSE_FOOTGEAR,
-		LOSE_HEADGEAR,
-		LOSE_LEVEL,
-		DEATH,
-		LOSE_SMALL_ITEM,
-		LOSE_HAND,
-		LOSE_PLUS_THREE_ITEM,
-		LOSE_ONE_SHOT,
-		LOSE_HIGHEST_BONUS,
-		LOSE_TWO_LEVELS,
-		LOSE_HAND_ITEMS,
-		LOSE_HAND_ITEM,
-		LOSE_ARMOR,
-		LOSE_BIG_ITEM,
-		LOSE_TWO_ITEMS
-	};
 
 	int level;
 	int numTreasures;
@@ -50,25 +52,23 @@ struct MonsterCard : Card {
 	int genderBonus;
 	int raceBonus;
 	int classBonus;
+	ClassType classTypeForBonus;
+	RaceType raceTypeForBonus;
+	Gender genderTypeForBonus;
 };
 
 struct ClassCard : Card {
 public:
-	enum ClassType {THIEF, CLERIC, WIZARD, WARRIOR};
-
 	ClassType classType;
 };
 
 struct RaceCard : Card {
-	enum RaceType {HALFLING, ELF, DWARF};
-
 	RaceType raceType;
+	string bonus1;
+	string bonus2;
 };
 
 struct ItemCard : Card {
-	enum SlotType {ONE_HAND, TWO_HANDS, HEADGEAR, FOOTGEAR, ARMOR};
-	enum Gender {MALE, FEMALE};
-
 	ClassCard::ClassType classRestriction;
 	RaceCard::RaceType raceRestriction;
 	Gender genderRestriction;

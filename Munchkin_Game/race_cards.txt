@@ -1,0 +1,3 @@
+Halfling, You are a halfling., 0, You may sell one item each turn for double price (other items are at normal price)., If you fail your initial Run Away roll you may discard a card and try once more.
+Elf, You are an elf., 1, +1 to Run Away., You go up 1 level for every monster you help someone else kill.
+Dwarf, You are a dwarf., 2, You can carry any number of Big items., You can have 6 cards in your hand.

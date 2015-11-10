@@ -1,0 +1,4 @@
+Thief, You are a thief., 0
+Cleric, You are a cleric., 1
+Wizard, You are a wizard., 2
+Warrior, You area  warrior., 3

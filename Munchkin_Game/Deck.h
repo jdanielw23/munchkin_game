@@ -35,5 +35,6 @@ public:
 	void shuffle();
 	Card dealCard();
 	void addCard(Card aCard);
+	string print();		//for debugging
 };
 

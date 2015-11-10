@@ -2,10 +2,11 @@
 * EGR 327 Project	CBU
 * Deck.cpp			Implemention File for the Deck class
 * Created 10-29-15	JDW
-* This class handles shuffling and dealing of a deck of cards
+* This class creates each deck of cards from the files
+* It also handles shuffling and dealing of a deck of cards
 * REVISION HISTORY:
 * 11-02-15			JDW		Began file input logic
-*
+* 
 */
 #include <vector>
 #include <string>
@@ -76,6 +77,7 @@ Deck::~Deck()
 {
 }
 
+//**************************   MONSTER CARDS   ********************************
 vector<MonsterCard> Deck::getMonsterCardsFromFile(string fileName)
 {
 	ifstream file(fileName);
@@ -93,11 +95,15 @@ vector<MonsterCard> Deck::getMonsterCardsFromFile(string fileName)
 			card.description = lineObjects.at(1);
 			card.level = stoi(lineObjects.at(2));
 			card.numTreasures = stoi(lineObjects.at(3));
-			card.badStuff = static_cast<MonsterCard::BadStuff>(stoi(lineObjects.at(4)));
-			card.altLoseLevel = stoi(lineObjects.at(5));
-			card.genderBonus = stoi(lineObjects.at(6));
-			card.raceBonus = stoi(lineObjects.at(7));
-			card.classBonus = stoi(lineObjects.at(8));
+			card.numLevels = stoi(lineObjects.at(4));
+			card.badStuff = static_cast<Card::BadStuff>(stoi(lineObjects.at(5)));
+			card.altLoseLevel = (stoi(lineObjects.at(6)) == 1) ? true: false;
+			card.genderBonus = stoi(lineObjects.at(7));
+			card.raceBonus = stoi(lineObjects.at(8));
+			card.classBonus = stoi(lineObjects.at(9));
+			card.genderTypeForBonus = static_cast<Card::Gender>(stoi(lineObjects.at(10)));
+			card.raceTypeForBonus = static_cast<Card::RaceType>(stoi(lineObjects.at(11)));
+			card.classTypeForBonus = static_cast<Card::ClassType>(stoi(lineObjects.at(12)));
 
 			cards.push_back(card);
 		}
@@ -107,30 +113,153 @@ vector<MonsterCard> Deck::getMonsterCardsFromFile(string fileName)
 	return cards;
 }
 
+//**************************   CLASS CARDS   ********************************
 vector<ClassCard> Deck::getClassCardsFromFile(string fileName)
 {
+	const int NUM_CLASS_CARDS = 3;	//There are three of each class card in the deck
+	ifstream file(fileName);
+	string fileLine;
 	vector<ClassCard> cards;
+
+	if (file.is_open())
+	{
+		while (getline(file, fileLine))
+		{
+			//Split each line of the text file into each element and assign them to the attributes of the ClassCard
+			vector<string> lineObjects = split(fileLine, ',');
+			ClassCard card;
+			card.title = lineObjects.at(0);
+			card.description = lineObjects.at(1);
+			card.classType = static_cast<Card::ClassType>(stoi(lineObjects.at(2)));
+
+			for (int i = 0; i < NUM_CLASS_CARDS; i++)
+				cards.push_back(card);
+		}
+		file.close();
+	}
 	return cards;
 }
 
+//**************************   RACE CARDS   ********************************
 vector<RaceCard> Deck::getRaceCardsFromFile(string fileName)
 {
+	const int NUM_RACE_CARDS = 3;	//There are three of each race card in the deck
+	ifstream file(fileName);
+	string fileLine;
 	vector<RaceCard> cards;
+
+	if (file.is_open())
+	{
+		while (getline(file, fileLine))
+		{
+			//Split each line of the text file into each element and assign them to the attributes of the RaceCard
+			vector<string> lineObjects = split(fileLine, ',');
+			RaceCard card;
+			card.title = lineObjects.at(0);
+			card.description = lineObjects.at(1);
+			card.raceType = static_cast<Card::RaceType>(stoi(lineObjects.at(2)));
+			card.bonus1 = lineObjects.at(3);
+			card.bonus2 = lineObjects.at(4);
+
+			for (int i = 0; i < NUM_RACE_CARDS; i++)
+				cards.push_back(card);
+		}
+		file.close();
+	}
+
 	return cards;
 }
 
+//**************************   ITEM CARDS   ********************************
 vector<ItemCard> Deck::getItemCardsFromFile(string fileName)
 {
+	ifstream file(fileName);
+	string fileLine;
 	vector<ItemCard> cards;
+
+	if (file.is_open())
+	{
+		while (getline(file, fileLine))
+		{
+			//Split each line of the text file into each element and assign them to the attributes of the ItemCard
+			vector<string> lineObjects = split(fileLine, ',');
+			ItemCard card;
+			card.title = lineObjects.at(0);
+			card.description = lineObjects.at(1);
+			card.classRestriction = static_cast<Card::ClassType>(stoi(lineObjects.at(2)));
+			card.raceRestriction = static_cast<Card::RaceType>(stoi(lineObjects.at(3)));
+			card.genderRestriction = static_cast<Card::Gender>(stoi(lineObjects.at(4)));
+			card.fireFlameAttack = (stoi(lineObjects.at(5)) == 1) ? true : false;
+			card.bigItem = (stoi(lineObjects.at(6)) == 1) ? true : false;
+			card.slotType = static_cast<Card::SlotType>(stoi(lineObjects.at(7)));
+			card.value = stoi(lineObjects.at(8));
+			card.bonus = stoi(lineObjects.at(9));
+
+			cards.push_back(card);
+		}
+		file.close();
+	}
 	return cards;
 }
 
+//**************************   ONE SHOT CARDS   ********************************
 vector<OneShotCard> Deck::getOneShotCardsFromFile(string fileName)
 {
+	ifstream file(fileName);
+	string fileLine;
 	vector<OneShotCard> cards;
+
+	if (file.is_open())
+	{
+		while (getline(file, fileLine))
+		{
+			//Split each line of the text file into each element and assign them to the attributes of the OneShotCard
+			vector<string> lineObjects = split(fileLine, ',');
+			OneShotCard card;
+			card.title = lineObjects.at(0);
+			card.description = lineObjects.at(1);
+			card.goUpLevel = (stoi(lineObjects.at(2)) == 1) ? true : false;
+			card.value = stoi(lineObjects.at(3));
+			card.bonus = stoi(lineObjects.at(4));
+
+			cards.push_back(card);
+		}
+		file.close();
+	}
 	return cards;
 }
 
+void Deck::shuffle()
+{
+	//TODO: Fill in this function
+}
+
+Card Deck::dealCard()
+{
+	//TODO: Fill in this function
+	Card card;
+	return card;
+}
+
+void Deck::addCard(Card aCard)
+{
+	//TODO: Fill in this function
+}
+
+string Deck::print()
+{
+	string result = "";
+	while (!deck.empty())
+	{
+		Card current = deck.top();
+		deck.pop();
+		result += current.title + "\n";
+	}
+
+	return result;
+}
+
+//**************************   PRIVATE MEMBER FUNCTIONS   ********************************
 
 //Functions for splitting a string into seperate strings based on a delimiter
 vector<string> & Deck::split(const string &s, char delim, vector<string> &elems) {

@@ -8,6 +8,8 @@
 
 #include <Windows.h>
 #include <iostream>
+#include <sstream>
+#include "Deck.h"
 
 using namespace std;
 
