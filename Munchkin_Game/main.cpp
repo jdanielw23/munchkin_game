@@ -10,6 +10,7 @@
 #include <iostream>
 #include <sstream>
 #include "Deck.h"
+#include "Tester.h"
 
 using namespace std;
 
@@ -76,6 +77,9 @@ int WINAPI WinMain(HINSTANCE hThisInstance, HINSTANCE hPrevInstance, LPSTR lpszA
 			}
 		};
 	}
+
+	Tester tester;
+	tester.runTests();
 
 	return 0;
 };

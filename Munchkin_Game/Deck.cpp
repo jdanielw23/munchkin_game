@@ -21,7 +21,7 @@ Deck::Deck()
 {
 }
 
-Deck::Deck(Card::CardType deckType)
+Deck::Deck(Card::DeckType deckType)
 {
 	const string MONSTER_CARDS_FILE = "monster_cards.txt";
 	const string CLASS_CARDS_FILE = "class_cards.txt";
@@ -31,10 +31,9 @@ Deck::Deck(Card::CardType deckType)
 
 	switch (deckType)
 	{
-	case Card::CardType::DOOR:
-	{
 		//If required deck type is the Door deck, then add all of the Door cards
-
+	case Card::DeckType::DOOR:
+	{
 		vector<MonsterCard> monsterCards;
 		monsterCards = getMonsterCardsFromFile(MONSTER_CARDS_FILE);
 		for (vector<MonsterCard>::iterator it = monsterCards.begin(); it != monsterCards.end(); ++it)
@@ -52,10 +51,10 @@ Deck::Deck(Card::CardType deckType)
 
 		break;
 	}
-	case Card::CardType::TREASURE:
-	{
-		//If required deck type is the Treasure deck, then add all of the Treasure cards
 
+	//If required deck type is the Treasure deck, then add all of the Treasure cards
+	case Card::DeckType::TREASURE:
+	{
 		vector<ItemCard> itemCards;
 		itemCards = getItemCardsFromFile(ITEM_CARDS_FILE);
 		for (vector<ItemCard>::iterator it = itemCards.begin(); it != itemCards.end(); ++it)
@@ -77,6 +76,45 @@ Deck::~Deck()
 {
 }
 
+void Deck::shuffle()
+{
+	//TODO: Fill in this function
+}
+
+Card Deck::dealCard()
+{
+	Card topCard = deck.top();
+	deck.pop();
+	return topCard;
+}
+
+void Deck::addCard(Card aCard)
+{
+	//TODO: Fill in this function
+}
+
+int Deck::getNumCards()
+{
+	return deck.size();
+}
+
+string Deck::print()
+{
+	string result = "";
+	stack<Card> temp = deck;
+
+	while (!temp.empty())
+	{
+		Card current = temp.top();
+		temp.pop();
+		result += current.title + "\n";
+	}
+
+	return result;
+}
+
+//**************************   PRIVATE MEMBER FUNCTIONS   ********************************
+
 //**************************   MONSTER CARDS   ********************************
 vector<MonsterCard> Deck::getMonsterCardsFromFile(string fileName)
 {
@@ -97,13 +135,14 @@ vector<MonsterCard> Deck::getMonsterCardsFromFile(string fileName)
 			card.numTreasures = stoi(lineObjects.at(3));
 			card.numLevels = stoi(lineObjects.at(4));
 			card.badStuff = static_cast<Card::BadStuff>(stoi(lineObjects.at(5)));
-			card.altLoseLevel = (stoi(lineObjects.at(6)) == 1) ? true: false;
+			card.altLoseLevel = (stoi(lineObjects.at(6)) == 1) ? true : false;
 			card.genderBonus = stoi(lineObjects.at(7));
 			card.raceBonus = stoi(lineObjects.at(8));
 			card.classBonus = stoi(lineObjects.at(9));
 			card.genderTypeForBonus = static_cast<Card::Gender>(stoi(lineObjects.at(10)));
 			card.raceTypeForBonus = static_cast<Card::RaceType>(stoi(lineObjects.at(11)));
 			card.classTypeForBonus = static_cast<Card::ClassType>(stoi(lineObjects.at(12)));
+			card.cardType = Card::CardType::MONSTER;
 
 			cards.push_back(card);
 		}
@@ -131,6 +170,7 @@ vector<ClassCard> Deck::getClassCardsFromFile(string fileName)
 			card.title = lineObjects.at(0);
 			card.description = lineObjects.at(1);
 			card.classType = static_cast<Card::ClassType>(stoi(lineObjects.at(2)));
+			card.cardType = Card::CardType::CLASS;
 
 			for (int i = 0; i < NUM_CLASS_CARDS; i++)
 				cards.push_back(card);
@@ -160,6 +200,7 @@ vector<RaceCard> Deck::getRaceCardsFromFile(string fileName)
 			card.raceType = static_cast<Card::RaceType>(stoi(lineObjects.at(2)));
 			card.bonus1 = lineObjects.at(3);
 			card.bonus2 = lineObjects.at(4);
+			card.cardType = Card::CardType::RACE;
 
 			for (int i = 0; i < NUM_RACE_CARDS; i++)
 				cards.push_back(card);
@@ -194,6 +235,7 @@ vector<ItemCard> Deck::getItemCardsFromFile(string fileName)
 			card.slotType = static_cast<Card::SlotType>(stoi(lineObjects.at(7)));
 			card.value = stoi(lineObjects.at(8));
 			card.bonus = stoi(lineObjects.at(9));
+			card.cardType = Card::CardType::ITEM;
 
 			cards.push_back(card);
 		}
@@ -221,6 +263,7 @@ vector<OneShotCard> Deck::getOneShotCardsFromFile(string fileName)
 			card.goUpLevel = (stoi(lineObjects.at(2)) == 1) ? true : false;
 			card.value = stoi(lineObjects.at(3));
 			card.bonus = stoi(lineObjects.at(4));
+			card.cardType = Card::CardType::ONE_SHOT;
 
 			cards.push_back(card);
 		}
@@ -228,38 +271,6 @@ vector<OneShotCard> Deck::getOneShotCardsFromFile(string fileName)
 	}
 	return cards;
 }
-
-void Deck::shuffle()
-{
-	//TODO: Fill in this function
-}
-
-Card Deck::dealCard()
-{
-	//TODO: Fill in this function
-	Card card;
-	return card;
-}
-
-void Deck::addCard(Card aCard)
-{
-	//TODO: Fill in this function
-}
-
-string Deck::print()
-{
-	string result = "";
-	while (!deck.empty())
-	{
-		Card current = deck.top();
-		deck.pop();
-		result += current.title + "\n";
-	}
-
-	return result;
-}
-
-//**************************   PRIVATE MEMBER FUNCTIONS   ********************************
 
 //Functions for splitting a string into seperate strings based on a delimiter
 vector<string> & Deck::split(const string &s, char delim, vector<string> &elems) {

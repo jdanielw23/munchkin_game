@@ -38,13 +38,13 @@ private:
 	int level;
 
 	//PRIVATE FUNCTIONS
-	void equipItem(ItemCard aCard);
+	void equipItem(ItemCard aCard);		//Probably going to be the most complicated!
+	void loseItem(ItemCard aCard);
 	void goUpLevel();		//Don't go higher than level 10
 	void goDownLevel();		//Don't go lower than level 1
 
 public:
-	enum CardType { ITEM, USABLE_ONCE_ONLY, CLASS, RACE, MONSTER};
-
+	
 	//CONSTRUCTORS
 	Player();
 	~Player();
@@ -63,6 +63,5 @@ public:
 	void discardCard(Card aCard);
 	void askForHelp();
 
-	
 };
 

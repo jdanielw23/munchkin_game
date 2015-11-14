@@ -29,12 +29,13 @@ private:
 
 public:
 	Deck();
-	Deck(Card::CardType deckType);	//Will be either a Door Deck or a Treasure Deck
+	Deck(Card::DeckType deckType);	//Will be either a Door Deck or a Treasure Deck
 	~Deck();
 
 	void shuffle();
 	Card dealCard();
 	void addCard(Card aCard);
 	string print();		//for debugging
+	int getNumCards();	//for debugging
 };
 

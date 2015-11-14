@@ -20,3 +20,39 @@ Player::Player()
 Player::~Player()
 {
 }
+
+//***************     PUBLIC FUNCTIONS     ************************
+
+void Player::playCard(Card aCard)
+{
+	//action will be different based on CardType
+}
+void Player::discardCard(Card aCard)
+{
+
+}
+void Player::askForHelp()
+{
+
+}
+
+
+//***************     PRIVATE FUNCTIONS     ************************
+
+void Player::equipItem(ItemCard aCard)
+{
+
+}
+void Player::loseItem(ItemCard aCard)
+{
+
+}
+void Player::goUpLevel()
+{
+	//Don't go higher than level 10
+}
+
+void Player::goDownLevel()
+{
+	//Don't go lower than level 1
+}

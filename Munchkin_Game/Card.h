@@ -14,7 +14,8 @@
 using namespace std;
 
 struct Card	{
-	enum CardType {DOOR, TREASURE};
+	enum DeckType {DOOR, TREASURE};
+	enum CardType {MONSTER, RACE, CLASS, ONE_SHOT, ITEM };
 	enum ClassType { THIEF, CLERIC, WIZARD, WARRIOR };
 	enum RaceType { HALFLING, ELF, DWARF };
 	enum SlotType { ONE_HAND, TWO_HANDS, HEADGEAR, FOOTGEAR, ARMOR };
@@ -69,8 +70,8 @@ struct RaceCard : Card {
 };
 
 struct ItemCard : Card {
-	ClassCard::ClassType classRestriction;
-	RaceCard::RaceType raceRestriction;
+	ClassType classRestriction;
+	RaceType raceRestriction;
 	Gender genderRestriction;
 	bool fireFlameAttack;
 	bool bigItem;
