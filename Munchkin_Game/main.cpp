@@ -9,7 +9,8 @@
 #include <Windows.h>
 #include <iostream>
 #include <sstream>
-#include <stdio.h>
+#include <cstdio>
+#include <ctime>
 #include "Deck.h"
 #include "Tester.h"
 
@@ -18,10 +19,14 @@ using namespace std;
 // Name of Window class
 const char lpszClassName[] = "MunchkinGame";
 
+const int MAX_PLAYERS = 4;
+const int MAX_ATTRIBS = 5;
+
 // This function carries out the messages that are sent to the window, i.e., click, dblclick, resize, etc...
 LRESULT CALLBACK WndProc(HWND hwnd, UINT message, WPARAM wParam, LPARAM lParam)
 {
-	HDC hDC; // handle to Device Context
+	HDC hDC;				// handle to Device Context
+	PAINTSTRUCT ps;			// Used to repaint window
 
 	switch (message)                  
 	{
@@ -58,8 +63,11 @@ int WINAPI WinMain(HINSTANCE hThisInstance, HINSTANCE hPrevInstance, LPSTR lpszA
 	HWND btnFight;
 
 	// Labels
-	HWND lblPlayerTitle, lblLevelTitle, lblStrengthTitle, lblClassTitle, lblRaceTitle;
-	HWND lblPlayerAttrib[4][5];	// Labels for the player data; [player][attribute]
+	HWND lblPlayerTitle, lblLevelTitle, lblStrengthTitle, lblClassTitle, lblRaceTitle; // Titles for the player attributes
+	HWND lblPlayerAttrib[MAX_PLAYERS][MAX_ATTRIBS];	// Labels for the player data; [player][attribute]
+	HWND lblMunchkinStrengthTitle, lblMunchkinStrength; // Munchkin str labels
+	HWND lblRectangle0, lblRectangle1; // Labels for rectangle objects
+	HWND lblEnemyTitle, lblEnemyLevel, lblEnemyDescription, lblEnemyBadStuff, lblEnemyTreasures, lblEnemyNumLevels;
 
 	// Fill out the window information
 	windowClass.hInstance = hThisInstance;
@@ -80,8 +88,11 @@ int WINAPI WinMain(HINSTANCE hThisInstance, HINSTANCE hPrevInstance, LPSTR lpszA
 		return false;
 
 	// Create the Window
-	hWnd = CreateWindowEx(0, lpszClassName, "Munchkin Game!", WS_OVERLAPPED|WS_SYSMENU, CW_USEDEFAULT,
-						  CW_USEDEFAULT, 500, 500, HWND_DESKTOP, NULL, hThisInstance, NULL);
+	hWnd = CreateWindowEx(0, lpszClassName, "Munchkin Game!", WS_OVERLAPPED|WS_SYSMENU, 
+						  CW_USEDEFAULT, CW_USEDEFAULT, 800, 600, HWND_DESKTOP, NULL, hThisInstance, NULL);
+
+	// Start the randomizer
+	srand(time(NULL));
 
 	// Create Labels
 	lblPlayerTitle = CreateWindow("static", "Player", WS_CHILD | WS_VISIBLE, 8, 8, 64, 16, hWnd, 0, hThisInstance, NULL);
@@ -89,6 +100,29 @@ int WINAPI WinMain(HINSTANCE hThisInstance, HINSTANCE hPrevInstance, LPSTR lpszA
 	lblStrengthTitle = CreateWindow("static", "Strength", WS_CHILD | WS_VISIBLE, 136, 8, 64, 16, hWnd, 0, hThisInstance, NULL);
 	lblClassTitle = CreateWindow("static", "Class", WS_CHILD | WS_VISIBLE, 200, 8, 64, 16, hWnd, 0, hThisInstance, NULL);
 	lblRaceTitle = CreateWindow("static", "Race", WS_CHILD | WS_VISIBLE, 264, 8, 64, 16, hWnd, 0, hThisInstance, NULL);
+
+	// TODO: Remove magic numbers
+	for (int i = 0; i < MAX_PLAYERS; i++)
+	{
+		// Temp code, delete this later.
+		string name[4] = { "Ryan", "Cameron", "Daniel", "Creed" };
+		string classes[4] = { "Thief", "Cleric", "Warrior", "Wizard" };
+		string races[4] = { "Dwarf", "Elf", "Halfing", "Engineer" };
+
+
+		// Set the labels and attributes
+		lblPlayerAttrib[i][0] = CreateWindow("static", name[i].c_str(), WS_CHILD | WS_VISIBLE, 8, 8 + (16 * (i + 1)), 64, 16, hWnd, 0, hThisInstance, NULL);
+		lblPlayerAttrib[i][1] = CreateWindow("static", to_string(i).c_str(), WS_CHILD | WS_VISIBLE, 72, 8 + (16 * (i + 1)), 64, 16, hWnd, 0, hThisInstance, NULL);
+		lblPlayerAttrib[i][2] = CreateWindow("static", to_string(1+(i*i)/2).c_str(), WS_CHILD | WS_VISIBLE, 136, 8 + (16 * (i + 1)), 64, 16, hWnd, 0, hThisInstance, NULL);
+		lblPlayerAttrib[i][3] = CreateWindow("static", classes[i].c_str(), WS_CHILD | WS_VISIBLE, 200, 8 + (16 * (i + 1)), 64, 16, hWnd, 0, hThisInstance, NULL);
+		lblPlayerAttrib[i][4] = CreateWindow("static", races[i].c_str(), WS_CHILD | WS_VISIBLE, 264, 8 + (16 * (i + 1)), 64, 16, hWnd, 0, hThisInstance, NULL);
+	}
+
+	lblMunchkinStrengthTitle = CreateWindow("static", "Munchkin Level", WS_CHILD | WS_VISIBLE | SS_CENTER, 328, 8, 128, 16, hWnd, 0, hThisInstance, NULL);
+	lblMunchkinStrength = CreateWindow("static", "9", WS_CHILD | WS_VISIBLE | SS_CENTER, 328, 24, 128, 16, hWnd, 0, hThisInstance, NULL);
+	
+	lblRectangle0 = CreateWindow("static", "", WS_CHILD | WS_VISIBLE | SS_CENTER | WS_BORDER, 456, 8, 128, 128, hWnd, 0, hThisInstance, NULL);
+	lblEnemyTitle = CreateWindow("static", "Goblin", WS_CHILD | WS_VISIBLE | SS_CENTER, 456, 18, 128, 16, hWnd, 0, hThisInstance, NULL);
 
 	// Make it visible
 	ShowWindow(hWnd, SW_SHOW); 
