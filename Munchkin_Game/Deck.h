@@ -17,13 +17,15 @@ using namespace std;
 class Deck
 {
 private:
-	stack<Card> deck;
 	
-	vector<MonsterCard> getMonsterCardsFromFile(string fileName);
-	vector<ClassCard> getClassCardsFromFile(string fileName);
-	vector<RaceCard> getRaceCardsFromFile(string fileName);
-	vector<ItemCard> getItemCardsFromFile(string fileName);
-	vector<OneShotCard> getOneShotCardsFromFile(string fileName);
+	stack<Card*> deck;
+	
+	vector<MonsterCard*> getMonsterCardsFromFile(string fileName);
+	vector<ClassCard*> getClassCardsFromFile(string fileName);
+	vector<RaceCard*> getRaceCardsFromFile(string fileName);
+	vector<ItemCard*> getItemCardsFromFile(string fileName);
+	vector<OneShotCard*> getOneShotCardsFromFile(string fileName);
+
 	vector<string> &split(const string &s, char delim, vector<string> &elems);
 	vector<string> split(const string &s, char delim);
 
@@ -33,8 +35,9 @@ public:
 	~Deck();
 
 	void shuffle();
-	Card dealCard();
+	Card* dealCard();
 	void addCard(Card aCard);
+
 	string print();		//for debugging
 	int getNumCards();	//for debugging
 };

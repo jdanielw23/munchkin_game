@@ -1,0 +1,3 @@
+Laurel Wreath, , 2, 0, 0, 0, 0, 0, 2, 100, 1
+Orpheus' Lyre, , 2, 0, 0, 0, 0, 0, 1, 300, 3
+Trident, Not Usable by Halfling, 1, 0, 0, 0, 0, 0, 0, 300, 3

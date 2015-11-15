@@ -6,6 +6,7 @@
 * REVISION HISTORY:
 * 11-01-15			RSR		Renamed variables to prevent conflicts with accessor names.
 * 11-01-15			RSR		Changed include to card.h instead of card.cpp
+* 11-14-15			JDW		Added some functions 
 */
 
 #pragma once
@@ -19,15 +20,21 @@ using namespace std;
 class Player
 {
 private:
+	const int MAX_LEVEL = 10;
+	const int MIN_LEVEL = 1;
+
 	//DATA MEMBERS
 	string name;
 
-	vector<Card> cardsInHand;
-	vector<ItemCard> equippedCards;
+	vector<Card*> cardsInHand;
+	vector<Card*> equippedCards;
 
-	vector<ClassCard::ClassType> classes;
-	vector<RaceCard::RaceType> races;
-	map<ItemCard::SlotType, bool> equippedSlots;
+	Card::ClassType class1;
+	Card::ClassType class2;
+	Card::RaceType race1;
+	Card::RaceType race2;
+	Card::Gender gender;
+	map<Card::SlotType, bool> equippedSlots;
 
 	bool bIsSuperMunchkin;	//a card that allows two classes
 	bool bIsHalfBreed;		//a card that allows two races
@@ -38,8 +45,7 @@ private:
 	int level;
 
 	//PRIVATE FUNCTIONS
-	void equipItem(ItemCard aCard);		//Probably going to be the most complicated!
-	void loseItem(ItemCard aCard);
+	
 	void goUpLevel();		//Don't go higher than level 10
 	void goDownLevel();		//Don't go lower than level 1
 
@@ -47,6 +53,10 @@ public:
 	
 	//CONSTRUCTORS
 	Player();
+	Player(Card::ClassType c1, Card::ClassType c2,
+		Card::RaceType r1, Card::RaceType r2, Card::Gender g);
+	//Player(string n, Card::Gender g);
+
 	~Player();
 
 	//ACCESSORS
@@ -59,9 +69,21 @@ public:
 	int getBattleStrength() { return (gear + level); }
 
 	//ACTION FUNCTIONS
-	void playCard(Card aCard);	//action will be different based on CardType
-	void discardCard(Card aCard);
+	void playCard(Card* aCard);	//action will be different based on CardType
+
+	void receiveCard(Card* aCard);
+	void discardCard(Card* aCard);
 	void askForHelp();
+
+	void becomeClass(ClassCard* aCard);
+	void becomeRace(RaceCard* aCard);
+	void equipItem(ItemCard* aCard);		//Probably going to be the most complicated!
+	void loseItem(ItemCard* aCard);
+
+	//TODO: Here for debugging only - move back to private later
+	bool equipIsAllowed(const ItemCard &aCard);
+
+	string printCardsInHand();
 
 };
 

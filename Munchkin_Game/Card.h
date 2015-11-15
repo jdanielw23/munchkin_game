@@ -5,6 +5,8 @@
 * This is the super structure for all of the different types of cards
 * REVISION HISTORY:
 * 11-01-15			RSR		Added string header to fix compilation errors
+* 11-14-15			JDW		Added virtual print function
+* 11-14-15			JDW		Added RestrictionKey
 */
 
 #pragma once
@@ -14,12 +16,51 @@
 using namespace std;
 
 struct Card	{
-	enum DeckType {DOOR, TREASURE};
-	enum CardType {MONSTER, RACE, CLASS, ONE_SHOT, ITEM };
-	enum ClassType { THIEF, CLERIC, WIZARD, WARRIOR };
-	enum RaceType { HALFLING, ELF, DWARF };
-	enum SlotType { ONE_HAND, TWO_HANDS, HEADGEAR, FOOTGEAR, ARMOR };
-	enum Gender { MALE, FEMALE };
+	enum DeckType {
+		DOOR,		//0
+		TREASURE	//1
+	};
+	enum CardType {
+		MONSTER,	//0
+		RACE,		//1
+		CLASS,		//2
+		ONE_SHOT,	//3
+		ITEM		//4
+	};
+	enum ClassType { 
+		THIEF,		//0
+		CLERIC,		//1
+		WIZARD,		//2
+		WARRIOR,	//3
+		NO_CLASS	//4
+	};
+	enum RaceType { 
+		HALFLING,	//0
+		ELF,		//1
+		DWARF,		//2
+		NO_RACE		//3
+	};
+	enum RestrictionKey {
+		NOT_USABLE_BY_CLASS,
+		NOT_USABLE_BY_RACE,
+		NOT_USABLE_BY_GENDER,
+		USABLE_BY_CLASS_ONLY,
+		USABLE_BY_RACE_ONLY,
+		USABLE_BY_GENDER_ONLY,
+		NO_RESTRICTION
+	};
+	enum SlotType {
+		ONE_HAND,	//0
+		TWO_HANDS,	//1
+		HEADGEAR,	//2
+		FOOTGEAR,	//3
+		ARMOR,		//4
+		NONE		//5
+	};
+	enum Gender { 
+		MALE,	//0
+		FEMALE	//1
+	};
 	enum BadStuff {
 		LOSE_FOOTGEAR,	//0
 		LOSE_HEADGEAR,	//1
@@ -41,6 +82,8 @@ struct Card	{
 	string title;
 	string description;
 	CardType cardType;
+
+	virtual string print() { return title + "\n";  }
 };
 
 struct MonsterCard : Card {
@@ -56,20 +99,27 @@ struct MonsterCard : Card {
 	ClassType classTypeForBonus;
 	RaceType raceTypeForBonus;
 	Gender genderTypeForBonus;
+
+	string print() { return (title + " " + to_string(level) + " " + to_string(numTreasures) + " " + to_string(badStuff) + "\n"); }
 };
 
 struct ClassCard : Card {
 public:
 	ClassType classType;
+
+	string print() { return (title + " " + to_string(classType) + "\n"); }
 };
 
 struct RaceCard : Card {
 	RaceType raceType;
 	string bonus1;
 	string bonus2;
+
+	string print() { return (title + " " + to_string(raceType) + " " + bonus1 + "\n"); }
 };
 
 struct ItemCard : Card {
+	RestrictionKey restrictionKey;
 	ClassType classRestriction;
 	RaceType raceRestriction;
 	Gender genderRestriction;
@@ -78,10 +128,14 @@ struct ItemCard : Card {
 	SlotType slotType;
 	int value;
 	int bonus;
+
+	string print() { return (title + " " + to_string(restrictionKey) + " " + to_string(value) + "\n"); }
 };
 
 struct OneShotCard : Card {
 	bool goUpLevel;
 	int value;
 	int bonus;
+
+	string print() { return (title + " " + to_string(goUpLevel) + " " + to_string(bonus) + "\n"); }
 };
