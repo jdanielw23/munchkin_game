@@ -1,0 +1,58 @@
+*****    DOOR DECK    *****
+Dwarf
+Dwarf
+Dwarf
+Elf
+Elf
+Elf
+Halfling
+Halfling
+Halfling
+Warrior
+Warrior
+Warrior
+Wizard
+Wizard
+Wizard
+Cleric
+Cleric
+Cleric
+Thief
+Thief
+Thief
+Tom Thumb
+Earwig
+Boogie Man
+Pluto
+Johnny Zucchiniseed
+Sirens
+
+
+*****    TREASURE DECK    *****
+
+
+lastCardDescription:  You are an elf.
+Elf
+Halfling
+Halfling
+Halfling
+Warrior
+Warrior
+Warrior
+Wizard
+Wizard
+Wizard
+Cleric
+Cleric
+Cleric
+Thief
+Thief
+Thief
+Tom Thumb
+Earwig
+Boogie Man
+Pluto
+Johnny Zucchiniseed
+Sirens
+
+dealCardsTest....................Pass
