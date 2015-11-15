@@ -35,7 +35,7 @@ private:
 	string printDoorDeckTest();
 	string printTreasureDeckTest();
 	bool dealCardsFromDeckTest();
-	void playerTest();
+	void playerEquippingTest();
 
 public:
 	Tester();

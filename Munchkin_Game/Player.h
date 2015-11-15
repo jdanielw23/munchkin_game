@@ -38,7 +38,6 @@ private:
 
 	bool bIsSuperMunchkin;	//a card that allows two classes
 	bool bIsHalfBreed;		//a card that allows two races
-	bool bHasHireling;		//a card that allows an extra item
 	bool bInBattle;
 
 	int gear;
@@ -62,7 +61,6 @@ public:
 	//ACCESSORS
 	bool isSuperMunchkin() { return bIsSuperMunchkin;  }
 	bool isHalfBreed() { return bIsHalfBreed; }
-	bool hasHireling() { return bHasHireling; }
 	bool isInBattle() { return bInBattle; }
 	int getGear() { return gear; }
 	int getLevel() { return level; }
@@ -79,6 +77,9 @@ public:
 	void becomeRace(RaceCard* aCard);
 	void equipItem(ItemCard* aCard);		//Probably going to be the most complicated!
 	void loseItem(ItemCard* aCard);
+
+	void setSuperMunchkin(bool super) { bIsSuperMunchkin = super; }
+	void setHalfBreed(bool half) { bIsHalfBreed = half; }
 
 	//TODO: Here for debugging only - move back to private later
 	bool equipIsAllowed(const ItemCard &aCard);

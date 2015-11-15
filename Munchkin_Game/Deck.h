@@ -37,6 +37,7 @@ public:
 	void shuffle();
 	Card* dealCard();
 	void addCard(Card aCard);
+	bool isEmpty() { return deck.empty(); }
 
 	string print();		//for debugging
 	int getNumCards();	//for debugging

@@ -226,7 +226,7 @@ vector<ItemCard*> Deck::getItemCardsFromFile(string fileName)
 		while (getline(file, fileLine))
 		{
 			//Split each line of the text file into each element and assign them to the attributes of the ItemCard
-			vector<string> lineObjects = split(fileLine, ',');
+			vector<string> lineObjects = split(fileLine, '\t');
 			ItemCard * card = new ItemCard();
 			(*card).title = lineObjects.at(0);
 			(*card).description = lineObjects.at(1);
