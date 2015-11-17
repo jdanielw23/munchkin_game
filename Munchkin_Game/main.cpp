@@ -19,7 +19,7 @@ using namespace std;
 // Name of Window class
 const char lpszClassName[] = "MunchkinGame";
 
-const int MAX_PLAYERS = 4;
+const int MAX_PLAYERS = 3;
 const int MAX_ATTRIBS = 5;
 
 // This function carries out the messages that are sent to the window, i.e., click, dblclick, resize, etc...
@@ -101,26 +101,29 @@ int WINAPI WinMain(HINSTANCE hThisInstance, HINSTANCE hPrevInstance, LPSTR lpszA
 	lblClassTitle = CreateWindow("static", "Class", WS_CHILD | WS_VISIBLE, 200, 8, 64, 16, hWnd, 0, hThisInstance, NULL);
 	lblRaceTitle = CreateWindow("static", "Race", WS_CHILD | WS_VISIBLE, 264, 8, 64, 16, hWnd, 0, hThisInstance, NULL);
 
+	// Temp code, delete this later.
+	string name[4] = { "Bob", "Jake", "Chris", "CPU" };
+	string classes[4] = { "-", "Warrior", "-", "-" };
+	string races[4] = { "Elf", "-", "-", "-" };
+	int levels[4] = { 3, 5, 4, 0 };
+	int strength[4] = { 10, 9, 6, 0 };
+
 	// TODO: Remove magic numbers
 	for (int i = 0; i < MAX_PLAYERS; i++)
 	{
-		// Temp code, delete this later.
-		string name[4] = { "Ryan", "Cameron", "Daniel", "Creed" };
-		string classes[4] = { "Thief", "Cleric", "Warrior", "Wizard" };
-		string races[4] = { "Dwarf", "Elf", "Halfing", "Engineer" };
-
-
 		// Set the labels and attributes
 		lblPlayerAttrib[i][0] = CreateWindow("static", name[i].c_str(), WS_CHILD | WS_VISIBLE, 8, 8 + (16 * (i + 1)), 64, 16, hWnd, 0, hThisInstance, NULL);
-		lblPlayerAttrib[i][1] = CreateWindow("static", to_string(i).c_str(), WS_CHILD | WS_VISIBLE, 72, 8 + (16 * (i + 1)), 64, 16, hWnd, 0, hThisInstance, NULL);
-		lblPlayerAttrib[i][2] = CreateWindow("static", to_string(1+(i*i)/2).c_str(), WS_CHILD | WS_VISIBLE, 136, 8 + (16 * (i + 1)), 64, 16, hWnd, 0, hThisInstance, NULL);
+		lblPlayerAttrib[i][1] = CreateWindow("static", to_string(levels[i]).c_str(), WS_CHILD | WS_VISIBLE, 72, 8 + (16 * (i + 1)), 64, 16, hWnd, 0, hThisInstance, NULL);
+		lblPlayerAttrib[i][2] = CreateWindow("static", to_string(strength[i]).c_str(), WS_CHILD | WS_VISIBLE, 136, 8 + (16 * (i + 1)), 64, 16, hWnd, 0, hThisInstance, NULL);
 		lblPlayerAttrib[i][3] = CreateWindow("static", classes[i].c_str(), WS_CHILD | WS_VISIBLE, 200, 8 + (16 * (i + 1)), 64, 16, hWnd, 0, hThisInstance, NULL);
 		lblPlayerAttrib[i][4] = CreateWindow("static", races[i].c_str(), WS_CHILD | WS_VISIBLE, 264, 8 + (16 * (i + 1)), 64, 16, hWnd, 0, hThisInstance, NULL);
 	}
 
-	lblMunchkinStrengthTitle = CreateWindow("static", "Munchkin Level", WS_CHILD | WS_VISIBLE | SS_CENTER, 328, 8, 128, 16, hWnd, 0, hThisInstance, NULL);
+	// Create the Strength labels
+	lblMunchkinStrengthTitle = CreateWindow("static", "Munchkin Strength", WS_CHILD | WS_VISIBLE | SS_CENTER, 328, 8, 128, 16, hWnd, 0, hThisInstance, NULL);
 	lblMunchkinStrength = CreateWindow("static", "9", WS_CHILD | WS_VISIBLE | SS_CENTER, 328, 24, 128, 16, hWnd, 0, hThisInstance, NULL);
 	
+	// Create enemy data labels.
 	lblRectangle0 = CreateWindow("static", "", WS_CHILD | WS_VISIBLE | SS_CENTER | WS_BORDER, 456, 8, 128, 128, hWnd, 0, hThisInstance, NULL);
 	lblEnemyTitle = CreateWindow("static", "Goblin", WS_CHILD | WS_VISIBLE | SS_CENTER, 456, 18, 128, 16, hWnd, 0, hThisInstance, NULL);
 
