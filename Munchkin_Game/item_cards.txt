@@ -1,0 +1,29 @@
+Laurel Wreath	 	6	0	0	0	0	0	2	100	1
+Orpheus' Lyre	 	6	0	0	0	0	0	1	300	3
+Trident	Not Usable by Halfling	1	0	0	0	0	0	0	300	3
+Digital Clock	Not Usable by Elf	1	0	1	0	0	0	5	300	2
+Mirrored Shield	 	6	0	0	0	0	0	0	400	2
+Holey Grail	 	6	0	0	0	0	0	0	300	3
+Really Long Bow	Not Usable by Dwarf	1	0	2	0	0	1	1	400	3
+Glass Slippers	 	6	0	0	0	0	0	3	300	3
+Martial Helmet	 	6	0	0	0	0	0	2	400	3
+Excalibur	Not Usable by Wizard	0	3	0	0	0	0	0	600	4
+Aegis	Usable by Females Only	5	0	0	1	0	1	0	500	3
+Dragonskin Armor	 	6	0	0	0	0	0	4	700	4
+Bermuda Shorts of Invulnerability	Not Usable by Warrior	0	2	0	0	0	0	5	400	4
+Spiky Elbows	 	6	0	0	0	0	0	5	200	1
+Hercules' Bow and Arrows	This counts as a fire/flame attack.	6	0	0	0	1	0	1	700	4
+Magic Bassoon	 	6	0	0	0	0	1	1	600	4
+Paul Bunyan's Axe	 	6	0	0	0	0	1	1	600	4
+Thor's Hammer	Usable by Warrior Only	3	3	0	0	0	1	0	700	5
+Lion Skin	Not Usable by Thief	0	0	0	0	0	0	4	600	5
+Thunderbolt	Usable by Wizard Only. This counts as a fire/flame attack.	3	2	0	0	1	0	0	0	2
+Achilles' Heels	Usable by Males Only	5	0	0	0	0	0	3	500	3
+Bark Armor	Usable by Elf Only	4	0	1	0	0	0	4	0	3
+Impressive Beard	Usable by Dwarf Only	4	0	2	0	0	0	4	0	2
+Hero Sandwich	Usable by Halfling Only	4	0	0	0	0	1	1	300	5
+Seven-League Boots	 	6	0	0	0	0	0	3	300	1
+Mace in a Can	 	6	0	0	0	0	0	0	600	5
+Feathered Headdress	Usable by Cleric Only	3	1	0	0	0	0	2	500	4
+Blessing of the Gods	 	6	0	0	0	0	0	5	0	3
+Golden Fleece	Usable by Thief Only	3	0	0	0	0	0	4	500	3

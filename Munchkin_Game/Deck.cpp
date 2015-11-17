@@ -6,7 +6,8 @@
 * It also handles shuffling and dealing of a deck of cards
 * REVISION HISTORY:
 * 11-02-15			JDW		Began file input logic
-* 
+* 11-14-15			JDW		Converted card types to pointers
+* 11-14-15			JDW		Implemented dealCard()
 */
 #include <vector>
 #include <string>
@@ -34,19 +35,19 @@ Deck::Deck(Card::DeckType deckType)
 		//If required deck type is the Door deck, then add all of the Door cards
 	case Card::DeckType::DOOR:
 	{
-		vector<MonsterCard> monsterCards;
+		vector<MonsterCard*> monsterCards;
 		monsterCards = getMonsterCardsFromFile(MONSTER_CARDS_FILE);
-		for (vector<MonsterCard>::iterator it = monsterCards.begin(); it != monsterCards.end(); ++it)
+		for (vector<MonsterCard*>::iterator it = monsterCards.begin(); it != monsterCards.end(); ++it)
 			deck.push(*it);
 
-		vector<ClassCard> classCards;
+		vector<ClassCard*> classCards;
 		classCards = getClassCardsFromFile(CLASS_CARDS_FILE);
-		for (vector<ClassCard>::iterator it = classCards.begin(); it != classCards.end(); ++it)
+		for (vector<ClassCard*>::iterator it = classCards.begin(); it != classCards.end(); ++it)
 			deck.push(*it);
 
-		vector<RaceCard> raceCards;
+		vector<RaceCard*> raceCards;
 		raceCards = getRaceCardsFromFile(RACE_CARDS_FILE);
-		for (vector<RaceCard>::iterator it = raceCards.begin(); it != raceCards.end(); ++it)
+		for (vector<RaceCard*>::iterator it = raceCards.begin(); it != raceCards.end(); ++it)
 			deck.push(*it);
 
 		break;
@@ -55,14 +56,14 @@ Deck::Deck(Card::DeckType deckType)
 	//If required deck type is the Treasure deck, then add all of the Treasure cards
 	case Card::DeckType::TREASURE:
 	{
-		vector<ItemCard> itemCards;
+		vector<ItemCard*> itemCards;
 		itemCards = getItemCardsFromFile(ITEM_CARDS_FILE);
-		for (vector<ItemCard>::iterator it = itemCards.begin(); it != itemCards.end(); ++it)
+		for (vector<ItemCard*>::iterator it = itemCards.begin(); it != itemCards.end(); ++it)
 			deck.push(*it);
 
-		vector<OneShotCard> oneShotCards;
+		vector<OneShotCard*> oneShotCards;
 		oneShotCards = getOneShotCardsFromFile(ONE_SHOT_CARDS_FILE);
-		for (vector<OneShotCard>::iterator it = oneShotCards.begin(); it != oneShotCards.end(); ++it)
+		for (vector<OneShotCard*>::iterator it = oneShotCards.begin(); it != oneShotCards.end(); ++it)
 			deck.push(*it);
 
 		break;
@@ -81,9 +82,9 @@ void Deck::shuffle()
 	//TODO: Fill in this function
 }
 
-Card Deck::dealCard()
+Card* Deck::dealCard()
 {
-	Card topCard = deck.top();
+	Card * topCard = deck.top();
 	deck.pop();
 	return topCard;
 }
@@ -95,32 +96,34 @@ void Deck::addCard(Card aCard)
 
 int Deck::getNumCards()
 {
-	return deck.size();
+	return (deck.size() );
 }
 
 string Deck::print()
 {
 	string result = "";
-	stack<Card> temp = deck;
+	
+	stack<Card*> temp = deck;
 
 	while (!temp.empty())
 	{
-		Card current = temp.top();
+		Card * current = temp.top();
 		temp.pop();
-		result += current.title + "\n";
+		result += (*current).print();
 	}
-
+	
 	return result;
+
 }
 
 //**************************   PRIVATE MEMBER FUNCTIONS   ********************************
 
 //**************************   MONSTER CARDS   ********************************
-vector<MonsterCard> Deck::getMonsterCardsFromFile(string fileName)
+vector<MonsterCard*> Deck::getMonsterCardsFromFile(string fileName)
 {
 	ifstream file(fileName);
 	string fileLine;
-	vector<MonsterCard> cards;
+	vector<MonsterCard*> cards;
 
 	if (file.is_open())
 	{
@@ -128,21 +131,21 @@ vector<MonsterCard> Deck::getMonsterCardsFromFile(string fileName)
 		{
 			//Split each line of the text file into each element and assign them to the attributes of the MonsterCard
 			vector<string> lineObjects = split(fileLine, ',');
-			MonsterCard card;
-			card.title = lineObjects.at(0);
-			card.description = lineObjects.at(1);
-			card.level = stoi(lineObjects.at(2));
-			card.numTreasures = stoi(lineObjects.at(3));
-			card.numLevels = stoi(lineObjects.at(4));
-			card.badStuff = static_cast<Card::BadStuff>(stoi(lineObjects.at(5)));
-			card.altLoseLevel = (stoi(lineObjects.at(6)) == 1) ? true : false;
-			card.genderBonus = stoi(lineObjects.at(7));
-			card.raceBonus = stoi(lineObjects.at(8));
-			card.classBonus = stoi(lineObjects.at(9));
-			card.genderTypeForBonus = static_cast<Card::Gender>(stoi(lineObjects.at(10)));
-			card.raceTypeForBonus = static_cast<Card::RaceType>(stoi(lineObjects.at(11)));
-			card.classTypeForBonus = static_cast<Card::ClassType>(stoi(lineObjects.at(12)));
-			card.cardType = Card::CardType::MONSTER;
+			MonsterCard * card = new MonsterCard();
+			(*card).title = lineObjects.at(0);
+			(*card).description = lineObjects.at(1);
+			(*card).level = stoi(lineObjects.at(2));
+			(*card).numTreasures = stoi(lineObjects.at(3));
+			(*card).numLevels = stoi(lineObjects.at(4));
+			(*card).badStuff = static_cast<Card::BadStuff>(stoi(lineObjects.at(5)));
+			(*card).altLoseLevel = (stoi(lineObjects.at(6)) == 1) ? true : false;
+			(*card).genderBonus = stoi(lineObjects.at(7));
+			(*card).raceBonus = stoi(lineObjects.at(8));
+			(*card).classBonus = stoi(lineObjects.at(9));
+			(*card).genderTypeForBonus = static_cast<Card::Gender>(stoi(lineObjects.at(10)));
+			(*card).raceTypeForBonus = static_cast<Card::RaceType>(stoi(lineObjects.at(11)));
+			(*card).classTypeForBonus = static_cast<Card::ClassType>(stoi(lineObjects.at(12)));
+			(*card).cardType = Card::CardType::MONSTER;
 
 			cards.push_back(card);
 		}
@@ -153,12 +156,12 @@ vector<MonsterCard> Deck::getMonsterCardsFromFile(string fileName)
 }
 
 //**************************   CLASS CARDS   ********************************
-vector<ClassCard> Deck::getClassCardsFromFile(string fileName)
+vector<ClassCard*> Deck::getClassCardsFromFile(string fileName)
 {
 	const int NUM_CLASS_CARDS = 3;	//There are three of each class card in the deck
 	ifstream file(fileName);
 	string fileLine;
-	vector<ClassCard> cards;
+	vector<ClassCard*> cards;
 
 	if (file.is_open())
 	{
@@ -166,11 +169,11 @@ vector<ClassCard> Deck::getClassCardsFromFile(string fileName)
 		{
 			//Split each line of the text file into each element and assign them to the attributes of the ClassCard
 			vector<string> lineObjects = split(fileLine, ',');
-			ClassCard card;
-			card.title = lineObjects.at(0);
-			card.description = lineObjects.at(1);
-			card.classType = static_cast<Card::ClassType>(stoi(lineObjects.at(2)));
-			card.cardType = Card::CardType::CLASS;
+			ClassCard * card = new ClassCard();
+			(*card).title = lineObjects.at(0);
+			(*card).description = lineObjects.at(1);
+			(*card).classType = static_cast<Card::ClassType>(stoi(lineObjects.at(2)));
+			(*card).cardType = Card::CardType::CLASS;
 
 			for (int i = 0; i < NUM_CLASS_CARDS; i++)
 				cards.push_back(card);
@@ -181,12 +184,12 @@ vector<ClassCard> Deck::getClassCardsFromFile(string fileName)
 }
 
 //**************************   RACE CARDS   ********************************
-vector<RaceCard> Deck::getRaceCardsFromFile(string fileName)
+vector<RaceCard*> Deck::getRaceCardsFromFile(string fileName)
 {
 	const int NUM_RACE_CARDS = 3;	//There are three of each race card in the deck
 	ifstream file(fileName);
 	string fileLine;
-	vector<RaceCard> cards;
+	vector<RaceCard*> cards;
 
 	if (file.is_open())
 	{
@@ -194,13 +197,13 @@ vector<RaceCard> Deck::getRaceCardsFromFile(string fileName)
 		{
 			//Split each line of the text file into each element and assign them to the attributes of the RaceCard
 			vector<string> lineObjects = split(fileLine, ',');
-			RaceCard card;
-			card.title = lineObjects.at(0);
-			card.description = lineObjects.at(1);
-			card.raceType = static_cast<Card::RaceType>(stoi(lineObjects.at(2)));
-			card.bonus1 = lineObjects.at(3);
-			card.bonus2 = lineObjects.at(4);
-			card.cardType = Card::CardType::RACE;
+			RaceCard * card = new RaceCard();
+			(*card).title = lineObjects.at(0);
+			(*card).description = lineObjects.at(1);
+			(*card).raceType = static_cast<Card::RaceType>(stoi(lineObjects.at(2)));
+			(*card).bonus1 = lineObjects.at(3);
+			(*card).bonus2 = lineObjects.at(4);
+			(*card).cardType = Card::CardType::RACE;
 
 			for (int i = 0; i < NUM_RACE_CARDS; i++)
 				cards.push_back(card);
@@ -212,30 +215,31 @@ vector<RaceCard> Deck::getRaceCardsFromFile(string fileName)
 }
 
 //**************************   ITEM CARDS   ********************************
-vector<ItemCard> Deck::getItemCardsFromFile(string fileName)
+vector<ItemCard*> Deck::getItemCardsFromFile(string fileName)
 {
 	ifstream file(fileName);
 	string fileLine;
-	vector<ItemCard> cards;
+	vector<ItemCard*> cards;
 
 	if (file.is_open())
 	{
 		while (getline(file, fileLine))
 		{
 			//Split each line of the text file into each element and assign them to the attributes of the ItemCard
-			vector<string> lineObjects = split(fileLine, ',');
-			ItemCard card;
-			card.title = lineObjects.at(0);
-			card.description = lineObjects.at(1);
-			card.classRestriction = static_cast<Card::ClassType>(stoi(lineObjects.at(2)));
-			card.raceRestriction = static_cast<Card::RaceType>(stoi(lineObjects.at(3)));
-			card.genderRestriction = static_cast<Card::Gender>(stoi(lineObjects.at(4)));
-			card.fireFlameAttack = (stoi(lineObjects.at(5)) == 1) ? true : false;
-			card.bigItem = (stoi(lineObjects.at(6)) == 1) ? true : false;
-			card.slotType = static_cast<Card::SlotType>(stoi(lineObjects.at(7)));
-			card.value = stoi(lineObjects.at(8));
-			card.bonus = stoi(lineObjects.at(9));
-			card.cardType = Card::CardType::ITEM;
+			vector<string> lineObjects = split(fileLine, '\t');
+			ItemCard * card = new ItemCard();
+			(*card).title = lineObjects.at(0);
+			(*card).description = lineObjects.at(1);
+			(*card).restrictionKey = static_cast<Card::RestrictionKey>(stoi(lineObjects.at(2)));
+			(*card).classRestriction = static_cast<Card::ClassType>(stoi(lineObjects.at(3)));
+			(*card).raceRestriction = static_cast<Card::RaceType>(stoi(lineObjects.at(4)));
+			(*card).genderRestriction = static_cast<Card::Gender>(stoi(lineObjects.at(5)));
+			(*card).fireFlameAttack = (stoi(lineObjects.at(6)) == 1) ? true : false;
+			(*card).bigItem = (stoi(lineObjects.at(7)) == 1) ? true : false;
+			(*card).slotType = static_cast<Card::SlotType>(stoi(lineObjects.at(8)));
+			(*card).value = stoi(lineObjects.at(9));
+			(*card).bonus = stoi(lineObjects.at(10));
+			(*card).cardType = Card::CardType::ITEM;
 
 			cards.push_back(card);
 		}
@@ -245,11 +249,11 @@ vector<ItemCard> Deck::getItemCardsFromFile(string fileName)
 }
 
 //**************************   ONE SHOT CARDS   ********************************
-vector<OneShotCard> Deck::getOneShotCardsFromFile(string fileName)
+vector<OneShotCard*> Deck::getOneShotCardsFromFile(string fileName)
 {
 	ifstream file(fileName);
 	string fileLine;
-	vector<OneShotCard> cards;
+	vector<OneShotCard*> cards;
 
 	if (file.is_open())
 	{
@@ -257,13 +261,13 @@ vector<OneShotCard> Deck::getOneShotCardsFromFile(string fileName)
 		{
 			//Split each line of the text file into each element and assign them to the attributes of the OneShotCard
 			vector<string> lineObjects = split(fileLine, ',');
-			OneShotCard card;
-			card.title = lineObjects.at(0);
-			card.description = lineObjects.at(1);
-			card.goUpLevel = (stoi(lineObjects.at(2)) == 1) ? true : false;
-			card.value = stoi(lineObjects.at(3));
-			card.bonus = stoi(lineObjects.at(4));
-			card.cardType = Card::CardType::ONE_SHOT;
+			OneShotCard * card = new OneShotCard();
+			(*card).title = lineObjects.at(0);
+			(*card).description = lineObjects.at(1);
+			(*card).goUpLevel = (stoi(lineObjects.at(2)) == 1) ? true : false;
+			(*card).value = stoi(lineObjects.at(3));
+			(*card).bonus = stoi(lineObjects.at(4));
+			(*card).cardType = Card::CardType::ONE_SHOT;
 
 			cards.push_back(card);
 		}

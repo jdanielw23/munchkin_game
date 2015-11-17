@@ -5,12 +5,15 @@
 * This class run tests on all of the functions and writes output to a file
 *
 * REVISION HISTORY:
-*
+* 11-14-15			JDW Added Member variables for easier testing
 */
 
 #include <iostream>
 #include <fstream>
 #include <string>
+#include "Deck.h"
+#include "Player.h"
+#include "Card.h"
 #pragma once
 
 using namespace std;
@@ -24,11 +27,15 @@ private:
 	const string ELLIPSES = "....................";
 
 	ofstream myFile;
+	Deck doorDeck;
+	Deck treasureDeck;
+	Player player;
 
 	//PRIVATE FUNCTIONS
 	string printDoorDeckTest();
 	string printTreasureDeckTest();
 	bool dealCardsFromDeckTest();
+	void playerEquippingTest();
 
 public:
 	Tester();
