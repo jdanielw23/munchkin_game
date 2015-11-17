@@ -8,6 +8,8 @@
 * 11-02-15			JDW		Began file input logic
 * 11-14-15			JDW		Converted card types to pointers
 * 11-14-15			JDW		Implemented dealCard()
+* 11-16-15			CSG		Implemented shuffle and addCard functions
+*
 */
 #include <vector>
 #include <string>
@@ -77,9 +79,61 @@ Deck::~Deck()
 {
 }
 
-void Deck::shuffle()
+void Deck::shuffle(Card::DeckType deckType)
 {
-	//TODO: Fill in this function
+	int randomDeck;
+	stack<Card*> shuffleDeckOne;
+	stack<Card*> shuffleDeckTwo;
+	stack<Card*> shuffleDeckThree;
+	stack<Card*> shuffleDeckFour;
+	stack<Card*> shuffleDeckFive;
+	
+	while( !(deck.empty()))				//This loop splits the deck up into 4 random shuffling decks
+	{
+		randomDeck = rand() % 4 + 1;		//generate a random number between 1 and 4
+		if(1 == randomDeck)
+			shuffleDeckOne.push(deck.top());
+		
+		else if(2 == randomDeck)
+			shuffleDeckTwo.push(deck.top());
+		
+		else if(3 == randomDeck)
+			shuffleDeckThree.push(deck.top());
+
+		else if(4 == randomDeck)
+			shuffleDeckFour.push(deck.top());
+
+		deck.pop();
+	}
+
+	while(!(shuffleDeckOne.empty() || shuffleDeckTwo.empty() || 
+		shuffleDeckThree.empty() || shuffleDeckFour.empty()))		//This loop takes the cards in the shuffle decks and puts them back in the
+																	//original deck.
+	{		
+		if(!(shuffleDeckOne.empty()))
+		{
+			deck.push(shuffleDeckOne.top());
+			shuffleDeckOne.pop();
+		}
+
+		if(!(shuffleDeckTwo.empty()))
+		{
+			deck.push(shuffleDeckTwo.top());
+			shuffleDeckTwo.pop();
+		}
+
+		if(!(shuffleDeckThree.empty()))
+		{
+			deck.push(shuffleDeckThree.top());
+			shuffleDeckThree.pop();
+		}
+
+		if(!(shuffleDeckFour.empty()))
+		{
+			deck.push(shuffleDeckFour.top());
+			shuffleDeckFour.pop();
+		}
+	}
 }
 
 Card* Deck::dealCard()
@@ -91,7 +145,7 @@ Card* Deck::dealCard()
 
 void Deck::addCard(Card aCard)
 {
-	//TODO: Fill in this function
+	deck.push(&aCard);
 }
 
 int Deck::getNumCards()
