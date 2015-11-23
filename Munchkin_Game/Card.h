@@ -5,8 +5,6 @@
 * This is the super structure for all of the different types of cards
 * REVISION HISTORY:
 * 11-01-15			RSR		Added string header to fix compilation errors
-* 11-14-15			JDW		Added virtual print function
-* 11-14-15			JDW		Added RestrictionKey
 */
 
 #pragma once

@@ -5,9 +5,7 @@
 * This class creates each deck of cards from the files
 * It also handles shuffling and dealing of a deck of cards
 * REVISION HISTORY:
-* 11-02-15			JDW		Began file input logic
 * 11-14-15			JDW		Converted card types to pointers
-* 11-14-15			JDW		Implemented dealCard()
 */
 #include <vector>
 #include <string>

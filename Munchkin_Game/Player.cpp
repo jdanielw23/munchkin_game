@@ -4,8 +4,6 @@
 * Created 10-29-15	JDW
 * This class contains the main logic for a player in the game.
 * REVISION HISTORY:
-* 11-14-15			JDW		Filled in Constructor
-* 11-14-15			JDW		Implemented some functions
 */
 
 #include "Player.h"

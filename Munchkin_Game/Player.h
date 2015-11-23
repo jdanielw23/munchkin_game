@@ -20,11 +20,13 @@ using namespace std;
 class Player
 {
 private:
+	enum PlayerType { AI, HUMAN };
 	const int MAX_LEVEL = 10;
 	const int MIN_LEVEL = 1;
 
 	//DATA MEMBERS
 	string name;
+	PlayerType pType;
 
 	vector<Card*> cardsInHand;
 	vector<Card*> equippedCards;
@@ -49,7 +51,6 @@ private:
 	void goDownLevel();		//Don't go lower than level 1
 
 public:
-	
 	//CONSTRUCTORS
 	Player();
 	Player(Card::ClassType c1, Card::ClassType c2,

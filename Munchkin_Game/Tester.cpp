@@ -5,7 +5,6 @@
 * This class run tests on all of the functions and writes output to a file
 *
 * REVISION HISTORY:
-* 11-14-15			JDW		Began testing Player class
 */
 
 #include <iostream>
