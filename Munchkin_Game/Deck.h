@@ -34,7 +34,7 @@ public:
 	Deck(Card::DeckType deckType);	//Will be either a Door Deck or a Treasure Deck
 	~Deck();
 
-	void shuffle();
+	void shuffle(Card::DeckType deckType);
 	Card* dealCard();
 	void addCard(Card aCard);
 	bool isEmpty() { return deck.empty(); }
