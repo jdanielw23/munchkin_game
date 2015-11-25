@@ -32,10 +32,11 @@ private:
 	Player player;
 
 	//PRIVATE FUNCTIONS
-	string printDoorDeckTest();
-	string printTreasureDeckTest();
+	void printDoorDeckTest();
+	void printTreasureDeckTest();
 	bool dealCardsFromDeckTest();
 	void playerEquippingTest();
+	void shuffleTest();
 
 public:
 	Tester();

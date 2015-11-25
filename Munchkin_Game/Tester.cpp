@@ -10,6 +10,7 @@
 #include <iostream>
 #include <fstream>
 #include <string>
+#include "Constants.h"
 #include "Tester.h"
 #include "Deck.h"
 #include "Card.h"
@@ -33,25 +34,33 @@ Tester::~Tester()
 void Tester::runTests()
 {	
 	myFile << "*****    DOOR DECK    *****" << endl;
-	myFile << printDoorDeckTest() << endl << endl;
+	myFile << "*****    SIZE: " + to_string(doorDeck.getNumCards()) + "    *****" << endl;
+	printDoorDeckTest();
+	myFile << endl;
 	
 	myFile << "*****    TREASURE DECK    *****" << endl;
-	myFile << printTreasureDeckTest() << endl << endl;
+	myFile << "*****    SIZE: " + to_string(treasureDeck.getNumCards()) + "    *****" << endl;
+	printTreasureDeckTest();
+	myFile << endl;
 
-	myFile << "dealCardsTest" << ELLIPSES << (dealCardsFromDeckTest() ? PASS : FAIL) << endl;
+	//myFile << "dealCardsTest" << ELLIPSES << (dealCardsFromDeckTest() ? PASS : FAIL) << endl;
 
-	playerEquippingTest();
+
+	shuffleTest();
+	//playerEquippingTest();
+
+
 }
 
 //***************     TEST FUNCTIONS     ********************
-string Tester::printDoorDeckTest()
+void Tester::printDoorDeckTest()
 {
-	return doorDeck.print();
+	myFile << doorDeck.print() << endl;
 }
 
-string Tester::printTreasureDeckTest()
+void Tester::printTreasureDeckTest()
 {
-	return treasureDeck.print();
+	myFile << treasureDeck.print() << endl;
 }
 
 bool Tester::dealCardsFromDeckTest()
@@ -75,8 +84,28 @@ bool Tester::dealCardsFromDeckTest()
 	return (newSize == (initialSize - CARDS_TO_DEAL));
 }
 
+void Tester::shuffleTest()
+{
+	const int NUM_SHUFFLES = 7;
+
+	for (int i = 0; i < NUM_SHUFFLES; i++)
+		doorDeck.shuffle();
+	myFile << "*****    DOOR DECK    *****" << endl;
+	myFile << "*****    SIZE: " + to_string(doorDeck.getNumCards()) + "    *****" << endl;
+	myFile << doorDeck.print() << endl;
+	myFile << endl;
+
+	for (int i = 0; i < NUM_SHUFFLES; i++)
+		treasureDeck.shuffle();
+	myFile << "*****    TREASURE DECK    *****" << endl;
+	myFile << "*****    SIZE: " + to_string(treasureDeck.getNumCards()) + "    *****" << endl;
+	myFile << treasureDeck.print() << endl;
+	myFile << endl;
+}
+
 void Tester::playerEquippingTest()
 {
+	/*
 	string classes[] = {"Thief","Cleric","Wizard","Warrior","None" };
 	string races[] = {"Hlflng","Elf","Dwarf","None" };
 	string genders[] = {"Male","Female"	};
@@ -149,4 +178,5 @@ void Tester::playerEquippingTest()
 			}
 		}
 	}
+	*/
 }

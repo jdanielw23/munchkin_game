@@ -27,13 +27,10 @@ Player::Player()
 	equippedSlots[Card::SlotType::ARMOR] = false;
 }
 
-Player::Player(Card::ClassType c1, Card::ClassType c2,
-	Card::RaceType r1, Card::RaceType r2, Card::Gender g) : Player()
+Player::Player(string n, PlayerType p, Card::Gender g) : Player()
 {
-	class1 = c1;
-	class2 = c2;
-	race1 = r1;
-	race2 = r2;
+	name = n;
+	pType = p;
 	gender = g;
 }
 
@@ -55,12 +52,21 @@ void Player::equipItem(ItemCard* aCard)
 		{
 			if ((*cardsInHand[i]).title == (*aCard).title)
 			{
-				//Erase the i-th element
-				cardsInHand.erase(cardsInHand.begin() + i);
+				//Remove card from hand
+				cardsInHand.erase(cardsInHand.begin() + i);	//Erase the i-th element
 			}
 		}
 
+		//Add card to equipped cards
 		equippedCards.push_back(aCard);
+
+		gear += (*aCard).bonus;		//Add bonus to player's gear
+
+		if ((*aCard).bigItem)
+			bHasBigItem = true;		//Check to see if it is a big item
+
+		if ((*aCard).slotType != Card::SlotType::NONE)
+			equippedSlots[(*aCard).slotType] = true;	//Occupy the correct slot
 	}
 	
 }
@@ -119,7 +125,15 @@ void Player::goDownLevel()
 
 bool Player::equipIsAllowed(const ItemCard &aCard)
 {
-	//TODO: TEST THIS FUNCTION
+	//TEST FOR BIG ITEM - Dwarves can have any number of big items
+	if (aCard.bigItem && hasBigItem() && race1 != Card::RaceType::DWARF && race2 != Card::RaceType::DWARF)
+		return false;
+
+	//TEST FOR SLOT FILLED
+	if (equippedSlots[aCard.slotType])
+		return false;
+
+	//TEST FOR ITEM RESTRICTION
 	switch (aCard.restrictionKey)
 	{
 	case Card::RestrictionKey::NOT_USABLE_BY_CLASS:

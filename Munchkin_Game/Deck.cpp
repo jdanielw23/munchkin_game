@@ -9,7 +9,7 @@
 * 11-14-15			JDW		Converted card types to pointers
 * 11-14-15			JDW		Implemented dealCard()
 * 11-16-15			CSG		Implemented shuffle and addCard functions
-*
+* 
 */
 #include <vector>
 #include <string>
@@ -79,14 +79,14 @@ Deck::~Deck()
 {
 }
 
-void Deck::shuffle(Card::DeckType deckType)
+void Deck::shuffle()
 {
 	int randomDeck;
 	stack<Card*> shuffleDeckOne;
 	stack<Card*> shuffleDeckTwo;
 	stack<Card*> shuffleDeckThree;
 	stack<Card*> shuffleDeckFour;
-	stack<Card*> shuffleDeckFive;
+	//stack<Card*> shuffleDeckFive;
 	
 	while( !(deck.empty()))				//This loop splits the deck up into 4 random shuffling decks
 	{
@@ -106,10 +106,10 @@ void Deck::shuffle(Card::DeckType deckType)
 		deck.pop();
 	}
 
-	while(!(shuffleDeckOne.empty() || shuffleDeckTwo.empty() || 
-		shuffleDeckThree.empty() || shuffleDeckFour.empty()))		//This loop takes the cards in the shuffle decks and puts them back in the
+	while(!(shuffleDeckOne.empty() && shuffleDeckTwo.empty() &&
+		shuffleDeckThree.empty() && shuffleDeckFour.empty()))		//This loop takes the cards in the shuffle decks and puts them back in the
 																	//original deck.
-	{		
+	{
 		if(!(shuffleDeckOne.empty()))
 		{
 			deck.push(shuffleDeckOne.top());
@@ -122,14 +122,14 @@ void Deck::shuffle(Card::DeckType deckType)
 			shuffleDeckTwo.pop();
 		}
 
-		if(!(shuffleDeckThree.empty()))
+		if (!(shuffleDeckThree.empty()))
 		{
 			deck.push(shuffleDeckThree.top());
 			shuffleDeckThree.pop();
-}
+		}
 
-		if(!(shuffleDeckFour.empty()))
-{
+		if (!(shuffleDeckFour.empty()))
+		{
 			deck.push(shuffleDeckFour.top());
 			shuffleDeckFour.pop();
 		}

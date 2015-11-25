@@ -41,6 +41,7 @@ private:
 	bool bIsSuperMunchkin;	//a card that allows two classes
 	bool bIsHalfBreed;		//a card that allows two races
 	bool bInBattle;
+	bool bHasBigItem;
 
 	int gear;
 	int level;
@@ -53,9 +54,7 @@ private:
 public:
 	//CONSTRUCTORS
 	Player();
-	Player(Card::ClassType c1, Card::ClassType c2,
-		Card::RaceType r1, Card::RaceType r2, Card::Gender g);
-	//Player(string n, Card::Gender g);
+	Player(string n, PlayerType p, Card::Gender g);
 
 	~Player();
 
@@ -63,6 +62,7 @@ public:
 	bool isSuperMunchkin() { return bIsSuperMunchkin;  }
 	bool isHalfBreed() { return bIsHalfBreed; }
 	bool isInBattle() { return bInBattle; }
+	bool hasBigItem() { return bHasBigItem; }
 	int getGear() { return gear; }
 	int getLevel() { return level; }
 	int getBattleStrength() { return (gear + level); }
@@ -74,17 +74,17 @@ public:
 	void discardCard(Card* aCard);
 	void askForHelp();
 
-	void becomeClass(ClassCard* aCard);
-	void becomeRace(RaceCard* aCard);
+	void equipClass(ClassCard* aCard);
+	void equipRace(RaceCard* aCard);
 	void equipItem(ItemCard* aCard);		//Probably going to be the most complicated!
 	void loseItem(ItemCard* aCard);
 
 	void setSuperMunchkin(bool super) { bIsSuperMunchkin = super; }
 	void setHalfBreed(bool half) { bIsHalfBreed = half; }
 
-	//TODO: Here for debugging only - move back to private later
 	bool equipIsAllowed(const ItemCard &aCard);
 
+	//TODO: Here for debugging only - move back to private later
 	string printCardsInHand();
 
 };
