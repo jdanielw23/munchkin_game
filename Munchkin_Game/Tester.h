@@ -37,6 +37,7 @@ private:
 	bool dealCardsFromDeckTest();
 	void playerEquippingTest();
 	void shuffleTest();
+	void gameTest();
 
 public:
 	Tester();

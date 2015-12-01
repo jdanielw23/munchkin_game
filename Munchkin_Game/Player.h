@@ -16,11 +16,11 @@
 #include "Card.h"
 
 using namespace std;
-
 class Player
 {
+	enum PlayerType;		//forward declare
+
 private:
-	enum PlayerType { AI, HUMAN };
 	const int MAX_LEVEL = 10;
 	const int MIN_LEVEL = 1;
 
@@ -52,6 +52,8 @@ private:
 	void goDownLevel();		//Don't go lower than level 1
 
 public:
+	enum PlayerType { AI, HUMAN };
+
 	//CONSTRUCTORS
 	Player();
 	Player(string n, PlayerType p, Card::Gender g);

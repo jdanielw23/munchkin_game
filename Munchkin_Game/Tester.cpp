@@ -15,6 +15,7 @@
 #include "Deck.h"
 #include "Card.h"
 #include "Player.h"
+#include "Game.h"
 
 using namespace std;
 
@@ -33,20 +34,15 @@ Tester::~Tester()
 //ONLY PUBLIC METHOD
 void Tester::runTests()
 {	
-	myFile << "*****    DOOR DECK    *****" << endl;
-	myFile << "*****    SIZE: " + to_string(doorDeck.getNumCards()) + "    *****" << endl;
-	printDoorDeckTest();
-	myFile << endl;
 	
-	myFile << "*****    TREASURE DECK    *****" << endl;
-	myFile << "*****    SIZE: " + to_string(treasureDeck.getNumCards()) + "    *****" << endl;
+	printDoorDeckTest();
 	printTreasureDeckTest();
+	gameTest();
+
 	myFile << endl;
 
 	//myFile << "dealCardsTest" << ELLIPSES << (dealCardsFromDeckTest() ? PASS : FAIL) << endl;
-
-
-	shuffleTest();
+	//shuffleTest();
 	//playerEquippingTest();
 
 
@@ -55,12 +51,18 @@ void Tester::runTests()
 //***************     TEST FUNCTIONS     ********************
 void Tester::printDoorDeckTest()
 {
+	myFile << "*****    DOOR DECK    *****" << endl;
+	myFile << "*****    SIZE: " + to_string(doorDeck.getNumCards()) + "    *****" << endl;
 	myFile << doorDeck.print() << endl;
+	myFile << endl;
 }
 
 void Tester::printTreasureDeckTest()
 {
+	myFile << "*****    TREASURE DECK    *****" << endl;
+	myFile << "*****    SIZE: " + to_string(treasureDeck.getNumCards()) + "    *****" << endl;
 	myFile << treasureDeck.print() << endl;
+	myFile << endl;
 }
 
 bool Tester::dealCardsFromDeckTest()
@@ -102,6 +104,31 @@ void Tester::shuffleTest()
 	myFile << treasureDeck.print() << endl;
 	myFile << endl;
 }
+
+void Tester::gameTest()
+{
+	Game newGame;
+	newGame.beginDefaultGame();
+	myFile << "*****    GAME TESTING    *****" << endl;
+	myFile << "Player's Turn should be 0: " + to_string(newGame.getCurrentPlayerTurn()) << endl;
+	myFile << "Next Player should be 1: " + to_string(newGame.nextPlayersTurn()) << endl;
+	myFile << "Next Player should be 2: " + to_string(newGame.nextPlayersTurn()) << endl;
+	myFile << "Next Player should be 3: " + to_string(newGame.nextPlayersTurn()) << endl;
+	myFile << "Next Player should be 0: " + to_string(newGame.nextPlayersTurn()) << endl;
+	myFile << "Current Player should be 0: " + to_string(newGame.getCurrentPlayerTurn()) << endl;
+	myFile << endl;
+
+	myFile << "After dealing cards:" << endl;
+	myFile << "*****    DOOR DECK    *****" << endl;
+	myFile << "*****    SIZE: " + to_string(newGame.doorDeck.getNumCards()) + "    *****" << endl;
+	myFile << newGame.doorDeck.print() << endl;
+
+	myFile << "*****    TREASURE DECK    *****" << endl;
+	myFile << "*****    SIZE: " + to_string(newGame.treasureDeck.getNumCards()) + "    *****" << endl;
+	myFile << newGame.treasureDeck.print() << endl;
+
+}
+
 
 void Tester::playerEquippingTest()
 {
