@@ -127,6 +127,13 @@ void Tester::gameTest()
 	myFile << "*****    SIZE: " + to_string(newGame.treasureDeck.getNumCards()) + "    *****" << endl;
 	myFile << newGame.treasureDeck.print() << endl;
 
+	vector<Card*> playersCards = newGame.getCurrentPlayer().getCardsInHand();
+
+	for (int i = 0; i < playersCards.size(); i++)
+	{
+		myFile << (*playersCards[i]).title << endl;
+	}
+
 }
 
 

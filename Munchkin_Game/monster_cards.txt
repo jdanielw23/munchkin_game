@@ -4,3 +4,15 @@ Pluto, -4 vs. Thieves., 18, 5, 2, 3, 0, 0, 0, -4, 0, 0, 0
 Boogie Man, He's a dancing fool!, 10, 3, 1, 0, 1, 0, 0, 0, 0, 0, 0
 Earwig, +4 against Elves., 1, 1, 1, 1, 0, 0, -4, 0, 0, 1, 0
 Tom Thumb, +3 against Halflings. He doesn't like competition., 2, 1, 1, 11, 0, 0, 3, 0, 0, 0, 0
+Sir Mordred, +3 against Warriors., 8, 2, 1, 2, 0, 0, 0, 3, 0, 0, 3
+Grendel, -3 against Dwarves., 14, 4, 1, 10, 0, 0, -3, 0, 0, 2, 0
+Loki, The trickster god!, 14, 4, 1, 14, 0, 0, 0, 0, 0, 0, 0
+Shiva the Destroyer, , 20, 5, 2, 3, 0, 0, 0, 0, 0, 0, 0
+Gremlin, , 1, 1, 1, 8, 0, 0, 0, 0, 0, 0, 0
+Flying Monkeys, +2 against Thieves., 6, 2, 1, 1, 0, 0, 0, 2, 0, 0, 0
+Bugbear, +2 against Elves., 6, 2, 1, 2, 0, 0, 2, 0, 0, 1, 0
+The Goose that Lays the Golden Eggs, , 2, 3, 1, 7, 0, 0, 0, 0, 0, 0, 0
+Sewer Gator, -3 against Elves., 10, 3, 1, 0, 0, 0, -3, 0, 0, 1, 0
+Fenris, -3 against Clerics, 16, 4, 2, 5, 0, 0, 0, -3, 0, 0, 1
+Kraken, -3 against Halflings., 16, 4, 2, 0, 1, 0, -3, 0, 0, 0, 0
+Quetzalcoatl, -3 against Elves., 16, 4, 2, 3, 0, 0, -3, 0, 0, 1, 0

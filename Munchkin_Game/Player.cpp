@@ -18,6 +18,7 @@ Player::Player()
 	race2 = Card::RaceType::NO_RACE;
 	bIsSuperMunchkin = false;
 	bIsHalfBreed = false;
+	turnPhase = TurnPhase::WAITING;
 
 	//Initialize Slots
 	equippedSlots[Card::SlotType::ONE_HAND] = false;

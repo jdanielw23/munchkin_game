@@ -1,0 +1,21 @@
+Golden Apples	Play during any combat. +3 to either side. Usable once only.	0	500	3
+Pocket Full of Poseys	Play during any combat. +2 to either side. Usable once only.	0	200	2
+Elixir of Ice Cream	Play during any combat. +3 to either side. Usable once only.	0	200	3
+Mistletoe Branch	Play during any combat. +3 to either side. Usable once only.	0	100	3
+Styx Stones	Play during any combat. +5 to either side. Usable once only.	0	500	5
+Snow Globe	Play during any combat. +3 to either side. Usable once only.	0	200	3
+Potion of Just Deserts	Play during any combat. +3 to either side. Usable once only.	0	200	3
+Greased Lightning	Play during any combat. +4 to either side. Usable once only.	0	300	4
+Greek Fire	Play during any combat. +5 to either side. Usable once only.	0	500	5
+Teuton Horn	Play during any combat. +5 to either side. Usable once only.	0	400	5
+Candy and Cola	Play during any combat. +2 to either side. Usable once only.	0	100	2
+Argo Knots	Play during any combat. +5 to either side. Usable once only.	0	400	5
+Potion of Sphinx Stinx	Play during any combat. +4 to either side. Usable once only.	0	400	4
+Ra! Ra! Ra!	Go Up A Level!	1	0	0
+Find the Fountain of Youth	Go Up A Level!	1	0	0
+Solve the Labyrinth	Go Up A Level!	1	0	0
+Survive Ragnarok	Go Up A Level!	1	0	0
+Attempt to Grapple	Go Up A Level!	1	0	0
+Steal Fire From the Gods	Go Up A Level!	1	0	0
+Find Atlantis	Go Up A Level!	1	0	0
+Raid the Lost Ark	Go Up A Level!	1	0	0

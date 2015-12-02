@@ -84,9 +84,27 @@ bool Game::isGameOver()
 
 	for (int i = 0; i < numPlayers; i++)
 	{
-		if (players[i].getLevel == WINNING_LEVEL)
+		if (players[i].getLevel() == WINNING_LEVEL)
 			return true;
 	}
 
 	return false;
+}
+
+Card* Game::bustDownDoor()
+{
+	if (doorDeck.isEmpty())
+	{
+		const int NUM_SHUFFLES = 7;
+		for (int i = 0; i < NUM_SHUFFLES; i++)
+		{
+			discardedDoorCards.shuffle();
+		}
+		while (!discardedDoorCards.isEmpty())
+			doorDeck.addCard(discardedDoorCards.dealCard());
+	}
+	
+	cardInPlay = doorDeck.dealCard();
+
+	return cardInPlay;
 }

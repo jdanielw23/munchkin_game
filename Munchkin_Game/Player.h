@@ -18,8 +18,50 @@
 using namespace std;
 class Player
 {
-	enum PlayerType;		//forward declare
+public:
+	enum PlayerType { AI, HUMAN };
+	enum TurnPhase { EQUIPPING, IN_BATTLE, DECIDING, CHARITY, WAITING };
 
+	//CONSTRUCTORS
+	Player();
+	Player(string n, PlayerType p, Card::Gender g);
+
+	~Player();
+
+	//ACCESSORS
+	bool isSuperMunchkin() { return bIsSuperMunchkin; }
+	bool isHalfBreed() { return bIsHalfBreed; }
+	bool isInBattle() { return bInBattle; }
+	bool hasBigItem() { return bHasBigItem; }
+	int getGear() { return gear; }
+	int getLevel() { return level; }
+	int getBattleStrength() { return (gear + level); }
+	vector<Card*> getCardsInHand() { return cardsInHand; }
+	vector<Card*> getEquippedCards() { return equippedCards; }
+
+	//ACTION FUNCTIONS
+	void playCard(Card* aCard);	//action will be different based on CardType
+
+	void receiveCard(Card* aCard);
+	void discardCard(Card* aCard);
+	void askForHelp();
+
+	void loseBattle();
+	bool winBattle();	//return true if player has reached level 10
+
+	void equipClass(ClassCard* aCard);
+	void equipRace(RaceCard* aCard);
+	void equipItem(ItemCard* aCard);
+	void loseItem(ItemCard* aCard);
+
+	void setSuperMunchkin(bool super) { bIsSuperMunchkin = super; }
+	void setHalfBreed(bool half) { bIsHalfBreed = half; }
+
+	bool equipIsAllowed(const ItemCard &aCard);
+
+	//TODO: Here for debugging only 
+	string printCardsInHand();
+	
 private:
 	const int MAX_LEVEL = 10;
 	const int MIN_LEVEL = 1;
@@ -37,6 +79,7 @@ private:
 	Card::RaceType race2;
 	Card::Gender gender;
 	map<Card::SlotType, bool> equippedSlots;
+	TurnPhase turnPhase;
 
 	bool bIsSuperMunchkin;	//a card that allows two classes
 	bool bIsHalfBreed;		//a card that allows two races
@@ -46,48 +89,11 @@ private:
 	int gear;
 	int level;
 
-	//PRIVATE FUNCTIONS
-	
+	//PRIVATE FUNCTIONS	
 	void goUpLevel();		//Don't go higher than level 10
 	void goDownLevel();		//Don't go lower than level 1
 
-public:
-	enum PlayerType { AI, HUMAN };
 
-	//CONSTRUCTORS
-	Player();
-	Player(string n, PlayerType p, Card::Gender g);
-
-	~Player();
-
-	//ACCESSORS
-	bool isSuperMunchkin() { return bIsSuperMunchkin;  }
-	bool isHalfBreed() { return bIsHalfBreed; }
-	bool isInBattle() { return bInBattle; }
-	bool hasBigItem() { return bHasBigItem; }
-	int getGear() { return gear; }
-	int getLevel() { return level; }
-	int getBattleStrength() { return (gear + level); }
-
-	//ACTION FUNCTIONS
-	void playCard(Card* aCard);	//action will be different based on CardType
-
-	void receiveCard(Card* aCard);
-	void discardCard(Card* aCard);
-	void askForHelp();
-
-	void equipClass(ClassCard* aCard);
-	void equipRace(RaceCard* aCard);
-	void equipItem(ItemCard* aCard);		//Probably going to be the most complicated!
-	void loseItem(ItemCard* aCard);
-
-	void setSuperMunchkin(bool super) { bIsSuperMunchkin = super; }
-	void setHalfBreed(bool half) { bIsHalfBreed = half; }
-
-	bool equipIsAllowed(const ItemCard &aCard);
-
-	//TODO: Here for debugging only - move back to private later
-	string printCardsInHand();
 
 };
 

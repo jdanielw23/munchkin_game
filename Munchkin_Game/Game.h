@@ -24,15 +24,20 @@ public:
 	//HERE TEMPORARILY FOR TESTING - SHOULD BE PRIVATE
 	Deck treasureDeck;
 	Deck doorDeck;
+	Deck discardedDoorCards;
+	Deck discardedTreasureCards;
 
 
-	int getCurrentPlayerTurn() { return playerTurn % numPlayers; }
-
+	
+	Player getCurrentPlayer() { return players[getCurrentPlayerTurn()]; }
 	void dealCards();
 	int nextPlayersTurn();
 	bool isGameOver();
 	void addPlayer(Player player);
+	Card* bustDownDoor();
 	void beginDefaultGame();		//Hopefully just for testing
+
+	int getCurrentPlayerTurn() { return playerTurn % numPlayers; }	//Move to private later
 
 private:
 	const int CARDS_TO_DEAL = 4;
@@ -40,6 +45,9 @@ private:
 	
 	int playerTurn;
 	int numPlayers;
-	Card cardInPlay;
+	Card *cardInPlay;
+
+	//PRIVATE FUNCTIONS
+	
 };
 

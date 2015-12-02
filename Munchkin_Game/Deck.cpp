@@ -143,9 +143,9 @@ Card* Deck::dealCard()
 	return topCard;
 }
 
-void Deck::addCard(Card aCard)
+void Deck::addCard(Card * aCard)
 {
-	deck.push(&aCard);
+	deck.push(aCard);
 }
 
 int Deck::getNumCards()
@@ -314,7 +314,7 @@ vector<OneShotCard*> Deck::getOneShotCardsFromFile(string fileName)
 		while (getline(file, fileLine))
 		{
 			//Split each line of the text file into each element and assign them to the attributes of the OneShotCard
-			vector<string> lineObjects = split(fileLine, ',');
+			vector<string> lineObjects = split(fileLine, '\t');
 			OneShotCard * card = new OneShotCard();
 			(*card).title = lineObjects.at(0);
 			(*card).description = lineObjects.at(1);
