@@ -6,7 +6,8 @@
 * REVISION HISTORY:
 *
 */
-
+#ifndef GAME_H
+#define GAME_H
 #pragma once
 #include <vector>
 #include "Player.h"
@@ -14,6 +15,8 @@
 #include "Card.h"
 
 using namespace std;
+
+class Player;
 
 class Game
 {
@@ -27,17 +30,21 @@ public:
 	Deck discardedDoorCards;
 	Deck discardedTreasureCards;
 
+	int getCurrentPlayerTurn() { return playerTurn; }	//Move to private later
+	Player* getCurrentPlayer() { return &players[playerTurn]; }
+	Deck* getDiscardedTreasureCards() { return &discardedTreasureCards; }
+	Deck* getDiscardedDoorCards() { return &discardedDoorCards; }
 
-	
-	Player getCurrentPlayer() { return players[getCurrentPlayerTurn()]; }
 	void dealCards();
 	int nextPlayersTurn();
 	bool isGameOver();
 	void addPlayer(Player player);
 	Card* bustDownDoor();
 	void beginDefaultGame();		//Hopefully just for testing
+	void playGame();
+	int allowBattleMods(int monsterStrength);		//return modification amount;
 
-	int getCurrentPlayerTurn() { return playerTurn % numPlayers; }	//Move to private later
+	
 
 private:
 	const int CARDS_TO_DEAL = 4;
@@ -51,3 +58,4 @@ private:
 	
 };
 
+#endif

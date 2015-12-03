@@ -8,14 +8,20 @@
 * 11-01-15			RSR		Changed include to card.h instead of card.cpp
 * 11-14-15			JDW		Added some functions 
 */
-
+#ifndef PLAYER_H
+#define PLAYER_H
 #pragma once
+#include "Game.h"
+#include "Card.h"
 #include <string>
 #include <vector>
 #include <map>
-#include "Card.h"
+
 
 using namespace std;
+
+class Game;
+
 class Player
 {
 public:
@@ -29,6 +35,8 @@ public:
 	~Player();
 
 	//ACCESSORS
+	string getName() { return name; }
+	PlayerType getPlayerType() { return playerType; }
 	bool isSuperMunchkin() { return bIsSuperMunchkin; }
 	bool isHalfBreed() { return bIsHalfBreed; }
 	bool isInBattle() { return bInBattle; }
@@ -38,26 +46,38 @@ public:
 	int getBattleStrength() { return (gear + level); }
 	vector<Card*> getCardsInHand() { return cardsInHand; }
 	vector<Card*> getEquippedCards() { return equippedCards; }
+	TurnPhase getTurnPhase() { return turnPhase; }
+
+	int getModdableAmount();
 
 	//ACTION FUNCTIONS
 	void playCard(Card* aCard);	//action will be different based on CardType
 
 	void receiveCard(Card* aCard);
-	void discardCard(Card* aCard);
+	Card* discardCard(Card* aCard);
 	void askForHelp();
+	void beginTurn(Game &currentGame);
+	void enterBattlePhase(Game &currentGame, MonsterCard *monster);
+	void enterDecidingPhase(Game &currentGame);
 
 	void loseBattle();
 	bool winBattle();	//return true if player has reached level 10
 
+	void equipItem(ItemCard* aCard);
 	void equipClass(ClassCard* aCard);
 	void equipRace(RaceCard* aCard);
-	void equipItem(ItemCard* aCard);
+	
 	void loseItem(ItemCard* aCard);
 
+	void setTurnPhase(TurnPhase phase) { turnPhase = phase; }
 	void setSuperMunchkin(bool super) { bIsSuperMunchkin = super; }
 	void setHalfBreed(bool half) { bIsHalfBreed = half; }
 
-	bool equipIsAllowed(const ItemCard &aCard);
+	bool equipItemIsAllowed(const ItemCard &aCard);
+	bool equipClassIsAllowed(const ClassCard &aCard);
+	bool equipRaceIsAllowed(const RaceCard &aCard);
+
+	int getMonsterStrength(MonsterCard *monster);
 
 	//TODO: Here for debugging only 
 	string printCardsInHand();
@@ -68,7 +88,7 @@ private:
 
 	//DATA MEMBERS
 	string name;
-	PlayerType pType;
+	PlayerType playerType;
 
 	vector<Card*> cardsInHand;
 	vector<Card*> equippedCards;
@@ -97,3 +117,4 @@ private:
 
 };
 
+#endif

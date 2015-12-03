@@ -6,7 +6,8 @@
 * REVISION HISTORY:
 * 11-01-15			RSR		Added string header to fix compilation errors
 */
-
+#ifndef CARD_H
+#define CARD_H
 #pragma once
 
 #include <string>
@@ -137,3 +138,5 @@ struct OneShotCard : Card {
 
 	string print() { return (title + " " + to_string(goUpLevel) + " " + to_string(bonus) + "\n"); }
 };
+
+#endif

@@ -10,7 +10,6 @@
 #include <iostream>
 #include <fstream>
 #include <string>
-#include "Constants.h"
 #include "Tester.h"
 #include "Deck.h"
 #include "Card.h"
@@ -127,9 +126,15 @@ void Tester::gameTest()
 	myFile << "*****    SIZE: " + to_string(newGame.treasureDeck.getNumCards()) + "    *****" << endl;
 	myFile << newGame.treasureDeck.print() << endl;
 
-	vector<Card*> playersCards = newGame.getCurrentPlayer().getCardsInHand();
+	Player* currentPlayer = newGame.getCurrentPlayer();
 
-	for (int i = 0; i < playersCards.size(); i++)
+	myFile << endl << "Player Name: " << (*currentPlayer).getName();
+
+	vector<Card*> playersCards = (*currentPlayer).getCardsInHand();
+
+	myFile << endl << "NUM Cards: " << to_string(playersCards.size()) << endl;
+
+	for (unsigned i = 0; i < playersCards.size(); i++)
 	{
 		myFile << (*playersCards[i]).title << endl;
 	}

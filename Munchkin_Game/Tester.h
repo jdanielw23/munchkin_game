@@ -7,7 +7,8 @@
 * REVISION HISTORY:
 * 11-14-15			JDW Added Member variables for easier testing
 */
-
+#ifndef TESTER_H
+#define TESTER_H
 #include <iostream>
 #include <fstream>
 #include <string>
@@ -46,3 +47,4 @@ public:
 	void runTests();
 };
 
+#endif

@@ -6,7 +6,8 @@
 * REVISION HISTORY:
 *
 */
-
+#ifndef DECK_H
+#define DECK_H
 #pragma once
 #include <stack>
 #include <vector>
@@ -43,3 +44,4 @@ public:
 	int getNumCards();	//for debugging
 };
 
+#endif

@@ -31,7 +31,7 @@ Player::Player()
 Player::Player(string n, PlayerType p, Card::Gender g) : Player()
 {
 	name = n;
-	pType = p;
+	playerType = p;
 	gender = g;
 }
 
@@ -44,10 +44,8 @@ Player::~Player()
 void Player::equipItem(ItemCard* aCard)
 {
 
-	if (equipIsAllowed(*aCard) )
+	if (equipItemIsAllowed(*aCard) )
 	{
-		vector<Card*>::iterator it;
-		it = cardsInHand.begin();
 
 		for (unsigned i = 0; i < cardsInHand.size(); i++)
 		{
@@ -55,6 +53,7 @@ void Player::equipItem(ItemCard* aCard)
 			{
 				//Remove card from hand
 				cardsInHand.erase(cardsInHand.begin() + i);	//Erase the i-th element
+				break;
 			}
 		}
 
@@ -72,29 +71,26 @@ void Player::equipItem(ItemCard* aCard)
 	
 }
 
-void Player::loseItem(ItemCard* aCard)
-{
-	//TODO: FILL IN THIS FUNCTION
-}
-
-void Player::playCard(Card* aCard)
-{
-	//action will be different based on CardType
-	//TODO: FILL IN THIS FUNCTION
-}
-
 void Player::receiveCard(Card* aCard)
 {
 	cardsInHand.push_back(aCard);
 }
 
-void Player::discardCard(Card* aCard)
+Card* Player::discardCard(Card* aCard)
 {
-	//TODO: FILL IN THIS FUNCTION
-}
-void Player::askForHelp()
-{
-	//TODO: FILL IN THIS FUNCTION
+	Card* discardedCard = aCard;
+	for (unsigned i = 0; i < cardsInHand.size(); i++)
+	{
+		if ((*cardsInHand[i]).title == (*aCard).title)
+		{
+			//Remove card from hand
+			discardedCard = cardsInHand[i];
+			cardsInHand.erase(cardsInHand.begin() + i);	//Erase the i-th element
+			break;
+		}
+	}
+
+	return discardedCard;
 }
 
 string Player::printCardsInHand()
@@ -107,6 +103,199 @@ string Player::printCardsInHand()
 	return result;
 }
 
+void Player::beginTurn(Game &currentGame)
+{
+	setTurnPhase(TurnPhase::EQUIPPING);
+
+	if (playerType == PlayerType::AI)
+	{
+		//In Equipping Phase
+		for (unsigned i = 0; i < cardsInHand.size(); i++)
+		{
+			if ((*cardsInHand[i]).cardType == Card::CardType::ITEM)
+			{
+				ItemCard *item = dynamic_cast<ItemCard*>(cardsInHand[i]);
+				if (equipItemIsAllowed(*item))
+					equipItem(item);
+			}
+			else if ((*cardsInHand[i]).cardType == Card::CardType::CLASS)
+			{
+				ClassCard *classCard = dynamic_cast<ClassCard*>(cardsInHand[i]);
+				if (equipClassIsAllowed(*classCard))
+					equipClass(classCard);
+			}
+			else if ((*cardsInHand[i]).cardType == Card::CardType::RACE)
+			{
+				RaceCard *raceCard = dynamic_cast<RaceCard*>(cardsInHand[i]);
+				if (equipRaceIsAllowed(*raceCard))
+					equipRace(raceCard);
+			}
+		}
+
+		//Bust down the door
+		Card *currentCard = currentGame.bustDownDoor();
+		if ((*currentCard).cardType == Card::CardType::MONSTER)
+		{
+			MonsterCard *monster = dynamic_cast<MonsterCard*>(currentCard);
+			enterBattlePhase(currentGame, monster);
+		}
+		else
+		{
+			cardsInHand.push_back(currentCard);	//Add card to player's hand
+			enterDecidingPhase(currentGame);
+		}
+	}
+}
+
+void Player::enterBattlePhase(Game &currentGame, MonsterCard *monster)
+{
+	setTurnPhase(TurnPhase::IN_BATTLE);
+	if (playerType == PlayerType::AI)
+	{
+		int monsterStrength = getMonsterStrength(monster);
+
+		if (getBattleStrength() > monsterStrength)
+		{
+			monsterStrength += currentGame.allowBattleMods(monsterStrength);
+			if (getBattleStrength() > monsterStrength)
+				winBattle();
+			else if ((getBattleStrength() + getModdableAmount()) > monsterStrength)
+			{
+				int modAmount = 0;
+				//Play his own cards to beef himself up
+				for (unsigned j = 0; j < getCardsInHand().size(); j++)
+				{
+					if ((*getCardsInHand()[j]).cardType == Card::CardType::ONE_SHOT)
+					{
+						//Discard each one shot card that the player just used
+						OneShotCard *oneShot = dynamic_cast<OneShotCard*>(getCardsInHand()[j]);
+						modAmount += (*oneShot).bonus;
+						(*currentGame.getDiscardedTreasureCards()).addCard(discardCard(oneShot));
+						j -= 1;	//Repair index if one card was removed. This might not work correctly.**********************
+						if ((getBattleStrength() + modAmount) > monsterStrength)
+							break;
+					}
+				}
+			}
+			else
+				loseBattle();
+		}
+		else if ((getBattleStrength() + getModdableAmount()) > monsterStrength)
+		{
+			int modAmount = 0;
+			//Play his own cards to beef himself up
+			for (unsigned j = 0; j < getCardsInHand().size(); j++)
+			{
+				if ((*getCardsInHand()[j]).cardType == Card::CardType::ONE_SHOT)
+				{
+					//Discard each one shot card that the player just used
+					OneShotCard *oneShot = dynamic_cast<OneShotCard*>(getCardsInHand()[j]);
+					modAmount += (*oneShot).bonus;
+					(*currentGame.getDiscardedTreasureCards()).addCard(discardCard(oneShot));
+					j -= 1;	//Repair index if one card was removed. This might not work correctly.**********************
+					if ((getBattleStrength() + modAmount) > monsterStrength)
+						break;
+				}
+			}
+		}
+		else
+			loseBattle();
+	}
+}
+
+void Player::enterDecidingPhase(Game &currentGame)
+{
+	setTurnPhase(TurnPhase::DECIDING);
+	if (playerType == PlayerType::AI)
+	{
+
+	}
+
+}
+
+void Player::equipClass(ClassCard* aCard)
+{
+	if (equipClassIsAllowed(*aCard))
+	{
+		for (unsigned i = 0; i < cardsInHand.size(); i++)
+		{
+			if ((*cardsInHand[i]).title == (*aCard).title)
+			{
+				//Remove card from hand
+				cardsInHand.erase(cardsInHand.begin() + i);	//Erase the i-th element
+			}
+		}
+
+		//Add card to equipped cards
+		equippedCards.push_back(aCard);
+
+		if (class1 == Card::ClassType::NO_CLASS)
+			class1 = (*aCard).classType;
+		else
+			class2 = (*aCard).classType;		//Already checked to make sure player is super munchkin
+	}
+}
+
+void Player::equipRace(RaceCard *aCard)
+{
+	if (equipRaceIsAllowed(*aCard))
+	{
+		for (unsigned i = 0; i < cardsInHand.size(); i++)
+		{
+			if ((*cardsInHand[i]).title == (*aCard).title)
+			{
+				//Remove card from hand
+				cardsInHand.erase(cardsInHand.begin() + i);	//Erase the i-th element
+			}
+		}
+
+		//Add card to equipped cards
+		equippedCards.push_back(aCard);
+
+		if (race1 == Card::RaceType::NO_RACE)
+			race1 = (*aCard).raceType;
+		else
+			race2 = (*aCard).raceType;		//Already checked to make sure player is half-breed
+	}
+}
+
+int Player::getMonsterStrength(MonsterCard *monster)
+{
+	int monsterStrength = (*monster).level;
+	if (gender == (*monster).genderTypeForBonus)
+		monsterStrength += (*monster).genderBonus;
+	if (class1 == (*monster).classTypeForBonus || class2 == (*monster).classTypeForBonus)
+		monsterStrength += (*monster).classBonus;
+	if (race1 == (*monster).raceTypeForBonus || race2 == (*monster).raceTypeForBonus)
+		monsterStrength += (*monster).raceBonus;
+
+	return monsterStrength;
+}
+
+int Player::getModdableAmount()
+{
+	int ableToAdd = 0;
+	//Determine how much player can modify
+	for (unsigned i = 0; i < getCardsInHand().size(); i++)
+	{
+		if ((*getCardsInHand()[i]).cardType == Card::CardType::ONE_SHOT)
+		{
+			OneShotCard *oneShot = dynamic_cast<OneShotCard*>(getCardsInHand()[i]);
+			ableToAdd += (*oneShot).bonus;
+		}
+	}
+	return ableToAdd;
+}
+
+void Player::loseBattle()
+{
+
+}
+
+bool Player::winBattle()
+{
+	return true;
+}
 
 //***************     PRIVATE FUNCTIONS     ************************
 
@@ -124,7 +313,7 @@ void Player::goDownLevel()
 		level--;
 }
 
-bool Player::equipIsAllowed(const ItemCard &aCard)
+bool Player::equipItemIsAllowed(const ItemCard &aCard)
 {
 	//TEST FOR BIG ITEM - Dwarves can have any number of big items
 	if (aCard.bigItem && hasBigItem() && race1 != Card::RaceType::DWARF && race2 != Card::RaceType::DWARF)
@@ -172,4 +361,22 @@ bool Player::equipIsAllowed(const ItemCard &aCard)
 	}
 
 	return false;
+}
+
+bool Player::equipClassIsAllowed(const ClassCard &aCard)
+{
+	if (class1 == Card::ClassType::NO_CLASS || 
+		(class2 == Card::ClassType::NO_CLASS && isSuperMunchkin()))
+		return true;
+	else
+		return false;
+}
+
+bool Player::equipRaceIsAllowed(const RaceCard &aCard)
+{
+	if (race1 == Card::RaceType::NO_RACE ||
+		(race2 == Card::RaceType::NO_RACE && isHalfBreed()))
+		return true;
+	else
+		return false;
 }

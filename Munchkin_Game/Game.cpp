@@ -56,9 +56,11 @@ void Game::beginDefaultGame()
 
 int Game::nextPlayersTurn()
 {
-	playerTurn++;
+	players[playerTurn].setTurnPhase(Player::TurnPhase::WAITING);	//End current player's turn
+	playerTurn = (playerTurn + 1) % numPlayers;	//Move to next player
+	players[playerTurn].setTurnPhase(Player::TurnPhase::EQUIPPING);	//Begin new player's turn
 
-	return playerTurn % numPlayers;
+	return playerTurn;
 }
 
 void Game::dealCards()
@@ -107,4 +109,40 @@ Card* Game::bustDownDoor()
 	cardInPlay = doorDeck.dealCard();
 
 	return cardInPlay;
+}
+
+int Game::allowBattleMods(int monsterStrength)
+{
+	int newMonsterStrength = monsterStrength;
+	int monsterMods = 0;
+	for (unsigned i = 0; i < players.size(); i++)	//Give each player a chance to modify
+	{
+		if (players[i].getPlayerType() == Player::PlayerType::AI)	//AI actions
+		{
+			int ableToAdd = players[i].getModdableAmount();
+			int neededToStopPlayer = (*getCurrentPlayer()).getBattleStrength() - newMonsterStrength;
+
+			if ((*getCurrentPlayer()).getLevel() > 5 && ableToAdd >= neededToStopPlayer)		//Don't waste modifiers if player is less than level 5
+			{
+				
+				for (unsigned j = 0; j < players[i].getCardsInHand().size(); j++)
+				{
+					if ((*players[i].getCardsInHand()[j]).cardType == Card::CardType::ONE_SHOT)
+					{
+						//Discard each one shot card that the player just used
+						OneShotCard *oneShot = dynamic_cast<OneShotCard*>(players[i].getCardsInHand()[j]);
+						newMonsterStrength += (*oneShot).bonus;
+						monsterMods += (*oneShot).bonus;
+						discardedTreasureCards.addCard(players[i].discardCard(oneShot));
+						j -= 1;	//Repair index if one card was removed. This might not work correctly.**********************
+						if (newMonsterStrength > (*getCurrentPlayer()).getBattleStrength())
+							break;
+					}
+				}
+			}
+
+		}
+
+	}
+	return monsterMods;
 }
