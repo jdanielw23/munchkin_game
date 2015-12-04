@@ -10,6 +10,7 @@
 #define GAME_H
 #pragma once
 #include <vector>
+#include <string>
 #include "Player.h"
 #include "Deck.h"
 #include "Card.h"
@@ -21,6 +22,8 @@ class Player;
 class Game
 {
 public:
+	const int NUM_SHUFFLES = 7;
+
 	Game();
 	~Game();
 
@@ -34,16 +37,25 @@ public:
 	Player* getCurrentPlayer() { return &players[playerTurn]; }
 	Deck* getDiscardedTreasureCards() { return &discardedTreasureCards; }
 	Deck* getDiscardedDoorCards() { return &discardedDoorCards; }
+	Deck* getTreasureDeck() { return &treasureDeck; }
+	Deck* getDoorDeck() { return &doorDeck; }
+	Card* getCardInPlay() { return cardInPlay; }
+
+	void setGameIsOver(bool gameOver) { gameIsOver = gameOver; }
+	void setCardInPlay(Card *aCard) { cardInPlay = aCard; }
 
 	void dealCards();
 	int nextPlayersTurn();
 	bool isGameOver();
 	void addPlayer(Player player);
 	Card* bustDownDoor();
-	void beginDefaultGame();		//Hopefully just for testing
-	void playGame();
-	int allowBattleMods(int monsterStrength);		//return modification amount;
+	void beginAutoGame();		//Hopefully just for testing
+	string playGame();
+	int allowBattleMods(int monsterStrength, string &output);		//return modification amount;
+	void resetTreasureDeck();
+	void resetDoorDeck();
 
+	string getWinningPlayer();
 	
 
 private:
@@ -53,6 +65,7 @@ private:
 	int playerTurn;
 	int numPlayers;
 	Card *cardInPlay;
+	bool gameIsOver;
 
 	//PRIVATE FUNCTIONS
 	

@@ -51,23 +51,23 @@ public:
 	int getModdableAmount();
 
 	//ACTION FUNCTIONS
-	void playCard(Card* aCard);	//action will be different based on CardType
-
 	void receiveCard(Card* aCard);
 	Card* discardCard(Card* aCard);
 	void askForHelp();
-	void beginTurn(Game &currentGame);
-	void enterBattlePhase(Game &currentGame, MonsterCard *monster);
-	void enterDecidingPhase(Game &currentGame);
+	void beginTurn(Game &currentGame, string &output);
+	void enterBattlePhase(Game &currentGame, MonsterCard *monster, string &output);
+	void enterDecidingPhase(Game &currentGame, string &output);
+	void enterCharityPhase(Game &currentGame, string &output);
 
-	void loseBattle();
-	bool winBattle();	//return true if player has reached level 10
+
+	void loseBattle(Game &currentGame, MonsterCard *monster, string &output);
+	void winBattle(Game &currentGame, MonsterCard *monster, string &output);	//return true if player has reached level 10
 
 	void equipItem(ItemCard* aCard);
 	void equipClass(ClassCard* aCard);
 	void equipRace(RaceCard* aCard);
 	
-	void loseItem(ItemCard* aCard);
+	bool loseItem(Game &currentGame, Card::SlotType slot);	//return true if item was lost
 
 	void setTurnPhase(TurnPhase phase) { turnPhase = phase; }
 	void setSuperMunchkin(bool super) { bIsSuperMunchkin = super; }
@@ -78,6 +78,8 @@ public:
 	bool equipRaceIsAllowed(const RaceCard &aCard);
 
 	int getMonsterStrength(MonsterCard *monster);
+
+	bool operator!=(const Player &p);
 
 	//TODO: Here for debugging only 
 	string printCardsInHand();

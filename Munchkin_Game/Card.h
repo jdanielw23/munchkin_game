@@ -128,7 +128,7 @@ struct ItemCard : Card {
 	int value;
 	int bonus;
 
-	string print() { return (title + " " + to_string(restrictionKey) + " " + to_string(value) + "\n"); }
+	string print() { return (title + "\tValue: " + to_string(value) + "\tBonus: " + to_string(bonus) + "\n"); }
 };
 
 struct OneShotCard : Card {
@@ -136,7 +136,7 @@ struct OneShotCard : Card {
 	int value;
 	int bonus;
 
-	string print() { return (title + " " + to_string(goUpLevel) + " " + to_string(bonus) + "\n"); }
+	string print() { return (title + "\tValue: " + to_string(value) + "\tBonus: " + to_string(bonus) + "\n"); }
 };
 
 #endif

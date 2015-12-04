@@ -33,12 +33,13 @@ Tester::~Tester()
 //ONLY PUBLIC METHOD
 void Tester::runTests()
 {	
-	
-	printDoorDeckTest();
-	printTreasureDeckTest();
-	gameTest();
+	playGameTest();
 
-	myFile << endl;
+	//printDoorDeckTest();
+	//printTreasureDeckTest();
+	//gameTest();
+
+	//myFile << endl;
 
 	//myFile << "dealCardsTest" << ELLIPSES << (dealCardsFromDeckTest() ? PASS : FAIL) << endl;
 	//shuffleTest();
@@ -107,7 +108,7 @@ void Tester::shuffleTest()
 void Tester::gameTest()
 {
 	Game newGame;
-	newGame.beginDefaultGame();
+	newGame.beginAutoGame();
 	myFile << "*****    GAME TESTING    *****" << endl;
 	myFile << "Player's Turn should be 0: " + to_string(newGame.getCurrentPlayerTurn()) << endl;
 	myFile << "Next Player should be 1: " + to_string(newGame.nextPlayersTurn()) << endl;
@@ -139,6 +140,14 @@ void Tester::gameTest()
 		myFile << (*playersCards[i]).title << endl;
 	}
 
+}
+
+void Tester::playGameTest()
+{
+	Game game;
+	game.beginAutoGame();
+	
+	myFile << "WINNING PLAYER: " << game.playGame() << endl;
 }
 
 

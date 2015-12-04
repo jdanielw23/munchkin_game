@@ -11,7 +11,7 @@
 Player::Player()
 {
 	level = MIN_LEVEL;
-	gear = level;
+	gear = 0;
 	class1 = Card::ClassType::NO_CLASS;
 	class2 = Card::ClassType::NO_CLASS;
 	race1 = Card::RaceType::NO_RACE;
@@ -46,16 +46,7 @@ void Player::equipItem(ItemCard* aCard)
 
 	if (equipItemIsAllowed(*aCard) )
 	{
-
-		for (unsigned i = 0; i < cardsInHand.size(); i++)
-		{
-			if ((*cardsInHand[i]).title == (*aCard).title)
-			{
-				//Remove card from hand
-				cardsInHand.erase(cardsInHand.begin() + i);	//Erase the i-th element
-				break;
-			}
-		}
+		discardCard(aCard);	//Remove card from hand
 
 		//Add card to equipped cards
 		equippedCards.push_back(aCard);
@@ -66,7 +57,12 @@ void Player::equipItem(ItemCard* aCard)
 			bHasBigItem = true;		//Check to see if it is a big item
 
 		if ((*aCard).slotType != Card::SlotType::NONE)
-			equippedSlots[(*aCard).slotType] = true;	//Occupy the correct slot
+		{
+			if ((*aCard).slotType == Card::SlotType::ONE_HAND && equippedSlots[Card::SlotType::ONE_HAND])
+				equippedSlots[Card::SlotType::TWO_HANDS] = true;
+			else
+				equippedSlots[(*aCard).slotType] = true;	//Occupy the correct slot
+		}
 	}
 	
 }
@@ -93,6 +89,7 @@ Card* Player::discardCard(Card* aCard)
 	return discardedCard;
 }
 
+//FOR TESTING
 string Player::printCardsInHand()
 {
 	string result = "";
@@ -103,9 +100,12 @@ string Player::printCardsInHand()
 	return result;
 }
 
-void Player::beginTurn(Game &currentGame)
+void Player::beginTurn(Game &currentGame, string &output)
 {
 	setTurnPhase(TurnPhase::EQUIPPING);
+
+	//FOR TESTING
+	output += "\tEquipping\n";
 
 	if (playerType == PlayerType::AI)
 	{
@@ -116,49 +116,77 @@ void Player::beginTurn(Game &currentGame)
 			{
 				ItemCard *item = dynamic_cast<ItemCard*>(cardsInHand[i]);
 				if (equipItemIsAllowed(*item))
+				{
 					equipItem(item);
+					output += "\t\tEquipped Item: " + (*item).title + " " + to_string((*item).bonus) + "\n";
+				}
 			}
 			else if ((*cardsInHand[i]).cardType == Card::CardType::CLASS)
 			{
 				ClassCard *classCard = dynamic_cast<ClassCard*>(cardsInHand[i]);
 				if (equipClassIsAllowed(*classCard))
+				{
 					equipClass(classCard);
+					output += "\t\tEquipped Class: " + (*classCard).title + "\n";
+				}
 			}
 			else if ((*cardsInHand[i]).cardType == Card::CardType::RACE)
 			{
 				RaceCard *raceCard = dynamic_cast<RaceCard*>(cardsInHand[i]);
 				if (equipRaceIsAllowed(*raceCard))
+				{
 					equipRace(raceCard);
+					output += "\t\tEquipped Race: " + (*raceCard).title + "\n";
+				}
+			}
+			else if ((*cardsInHand[i]).cardType == Card::CardType::ONE_SHOT)
+			{
+				OneShotCard *oneShot = dynamic_cast<OneShotCard*>(cardsInHand[i]);
+				if ((*oneShot).goUpLevel)
+				{
+					goUpLevel();
+					discardCard(oneShot);
+					output += "\t\tUse Go Up A Level Card: " + (*oneShot).title + "\n";
+				}
 			}
 		}
 
 		//Bust down the door
 		Card *currentCard = currentGame.bustDownDoor();
+		output += "\t****   BUST DOWN THE DOOR   ****\n";
+
 		if ((*currentCard).cardType == Card::CardType::MONSTER)
 		{
 			MonsterCard *monster = dynamic_cast<MonsterCard*>(currentCard);
-			enterBattlePhase(currentGame, monster);
+
+			output += "\tEntering battle with " + (*monster).title + "\n";
+			enterBattlePhase(currentGame, monster, output);
 		}
 		else
 		{
 			cardsInHand.push_back(currentCard);	//Add card to player's hand
-			enterDecidingPhase(currentGame);
+
+			output += "\tNot a monster.\n";
+			enterDecidingPhase(currentGame, output);
 		}
 	}
 }
 
-void Player::enterBattlePhase(Game &currentGame, MonsterCard *monster)
+void Player::enterBattlePhase(Game &currentGame, MonsterCard *monster, string &output)
 {
 	setTurnPhase(TurnPhase::IN_BATTLE);
 	if (playerType == PlayerType::AI)
 	{
 		int monsterStrength = getMonsterStrength(monster);
 
+		output += "\t\tPlayer " + to_string(getBattleStrength()) + "\t vs \t" + (*monster).title + " " + to_string(monsterStrength) + "\n";
+
 		if (getBattleStrength() > monsterStrength)
 		{
-			monsterStrength += currentGame.allowBattleMods(monsterStrength);
+			monsterStrength += currentGame.allowBattleMods(monsterStrength, output);
+
 			if (getBattleStrength() > monsterStrength)
-				winBattle();
+				winBattle(currentGame, monster, output);
 			else if ((getBattleStrength() + getModdableAmount()) > monsterStrength)
 			{
 				int modAmount = 0;
@@ -169,16 +197,23 @@ void Player::enterBattlePhase(Game &currentGame, MonsterCard *monster)
 					{
 						//Discard each one shot card that the player just used
 						OneShotCard *oneShot = dynamic_cast<OneShotCard*>(getCardsInHand()[j]);
-						modAmount += (*oneShot).bonus;
-						(*currentGame.getDiscardedTreasureCards()).addCard(discardCard(oneShot));
-						j -= 1;	//Repair index if one card was removed. This might not work correctly.**********************
-						if ((getBattleStrength() + modAmount) > monsterStrength)
-							break;
+
+						if (!(*oneShot).goUpLevel)
+						{
+							modAmount += (*oneShot).bonus;
+							(*currentGame.getDiscardedTreasureCards()).addCard(discardCard(oneShot));
+							j -= 1;	//Repair index if one card was removed. This might not work correctly.**********************
+
+							output += "\t\t\tUsed a One Shot: +" + to_string((*oneShot).bonus) + " for player.\n";
+							if ((getBattleStrength() + modAmount) > monsterStrength)
+								break;
+						}
 					}
 				}
+				winBattle(currentGame, monster, output);
 			}
 			else
-				loseBattle();
+				loseBattle(currentGame, monster, output);
 		}
 		else if ((getBattleStrength() + getModdableAmount()) > monsterStrength)
 		{
@@ -190,27 +225,94 @@ void Player::enterBattlePhase(Game &currentGame, MonsterCard *monster)
 				{
 					//Discard each one shot card that the player just used
 					OneShotCard *oneShot = dynamic_cast<OneShotCard*>(getCardsInHand()[j]);
-					modAmount += (*oneShot).bonus;
-					(*currentGame.getDiscardedTreasureCards()).addCard(discardCard(oneShot));
-					j -= 1;	//Repair index if one card was removed. This might not work correctly.**********************
-					if ((getBattleStrength() + modAmount) > monsterStrength)
-						break;
+
+					if (!(*oneShot).goUpLevel)
+					{
+						modAmount += (*oneShot).bonus;
+						(*currentGame.getDiscardedTreasureCards()).addCard(discardCard(oneShot));
+						j -= 1;	//Repair index if one card was removed. This might not work correctly.**********************
+
+						output += "\t\t\tUsed a One Shot: +" + to_string((*oneShot).bonus) + " for player.\n";
+						if ((getBattleStrength() + modAmount) > monsterStrength)
+							break;
+					}
 				}
 			}
+			winBattle(currentGame, monster, output);
 		}
 		else
-			loseBattle();
+			loseBattle(currentGame, monster, output);
 	}
 }
 
-void Player::enterDecidingPhase(Game &currentGame)
+void Player::enterDecidingPhase(Game &currentGame, string &output)
 {
 	setTurnPhase(TurnPhase::DECIDING);
+
+	bool lookForTrouble = false;
+
 	if (playerType == PlayerType::AI)
 	{
+		//If we can, look for trouble
+		for (unsigned i = 0; i < cardsInHand.size(); i++)
+		{
+			if ((*cardsInHand[i]).cardType == Card::CardType::MONSTER)
+			{
+				MonsterCard *monster = dynamic_cast<MonsterCard*>(cardsInHand[i]);
+				if (getMonsterStrength(monster) < getBattleStrength())
+				{
+					cardsInHand.erase(cardsInHand.begin() + i);
+					currentGame.setCardInPlay(monster);
+					lookForTrouble = true;
+					break;
+				}
+			}
+		}
+		//Otherwise, Loot the room
+		if (!lookForTrouble)
+		{
+			if ((*currentGame.getDoorDeck()).isEmpty())
+				currentGame.resetDoorDeck();
+			cardsInHand.push_back((*currentGame.getDoorDeck()).dealCard());
 
+			output += "\t****   LOOT THE ROOM   ****\n";
+			enterCharityPhase(currentGame, output);
+		}
+		else
+		{
+			MonsterCard *monster = dynamic_cast<MonsterCard*>(currentGame.getCardInPlay());
+
+			output += "\t****   LOOK FOR TROUBLE   ****\n";
+			enterBattlePhase(currentGame, monster, output);
+		}
 	}
 
+}
+
+void Player::enterCharityPhase(Game &currentGame, string &output)
+{
+	setTurnPhase(TurnPhase::CHARITY);
+
+	int maxCards = 5;
+	if (race1 == Card::RaceType::DWARF || race2 == Card::RaceType::DWARF)
+		maxCards = 6;
+	
+	if (playerType == PlayerType::AI)
+	{
+		while (cardsInHand.size() > maxCards)
+		{
+			Card *card = cardsInHand.front();
+			cardsInHand.erase(cardsInHand.begin());
+			if ((*card).cardType == Card::CardType::ITEM ||
+				(*card).cardType == Card::CardType::ONE_SHOT)
+				(*currentGame.getDiscardedTreasureCards()).addCard(card);
+			else
+				(*currentGame.getDiscardedDoorCards()).addCard(card);
+		}
+	}
+
+	setTurnPhase(TurnPhase::WAITING);
+	currentGame.setGameIsOver(currentGame.isGameOver());
 }
 
 void Player::equipClass(ClassCard* aCard)
@@ -287,29 +389,123 @@ int Player::getModdableAmount()
 	return ableToAdd;
 }
 
-void Player::loseBattle()
+void Player::loseBattle(Game &currentGame, MonsterCard *monster, string &output)
 {
+	(*currentGame.getDiscardedDoorCards()).addCard(monster);
 
+	output += "\t\tPLAYER LOSES!\n";
+
+	bool altLoseLevel = (*monster).altLoseLevel;
+	switch ((*monster).badStuff)
+	{
+	case Card::BadStuff::LOSE_FOOTGEAR:
+		if(!loseItem(currentGame, Card::SlotType::FOOTGEAR) && altLoseLevel)
+			goDownLevel();
+		break;
+	case Card::BadStuff::LOSE_HEADGEAR:
+		if (!loseItem(currentGame, Card::SlotType::HEADGEAR) && altLoseLevel)
+			goDownLevel();
+		break;
+	case Card::BadStuff::LOSE_LEVEL:
+		goDownLevel();
+		break;
+	case Card::BadStuff::DEATH:
+		break;
+	case Card::BadStuff::LOSE_SMALL_ITEM:
+		break;
+	case Card::BadStuff::LOSE_HAND:
+		break;
+	case Card::BadStuff::LOSE_PLUS_THREE_ITEM:
+		break;
+	case Card::BadStuff::LOSE_ONE_SHOT:
+		break;
+	case Card::BadStuff::LOSE_HIGHEST_BONUS:
+		break;
+	case Card::BadStuff::LOSE_TWO_LEVELS:
+		goDownLevel();
+		goDownLevel();
+		break;
+	case Card::BadStuff::LOSE_HAND_ITEMS:
+		break;
+	case Card::BadStuff::LOSE_HAND_ITEM:
+		break;
+	case Card::BadStuff::LOSE_ARMOR:
+		if(!loseItem(currentGame, Card::SlotType::ARMOR) && altLoseLevel)
+			goDownLevel();
+		break;
+	case Card::BadStuff::LOSE_BIG_ITEM:
+		break;
+	case Card::BadStuff::LOSE_TWO_ITEMS:
+		break;
+	default:
+		break;
+	}
+
+	enterCharityPhase(currentGame, output);
 }
 
-bool Player::winBattle()
+void Player::winBattle(Game &currentGame, MonsterCard *monster, string &output)
 {
-	return true;
+	(*currentGame.getDiscardedDoorCards()).addCard(monster);
+
+	output += "\t\tPLAYER WINS!\n";
+
+	for (int i = 0; i < (*monster).numLevels; i++)
+	{
+		output += "\t\t\tGo Up A Level\n";
+		goUpLevel();
+	}
+
+	for (int i = 0; i < (*monster).numTreasures; i++)
+	{
+		if ((*currentGame.getTreasureDeck()).isEmpty())
+			currentGame.resetTreasureDeck();
+
+		cardsInHand.push_back((*currentGame.getTreasureDeck()).dealCard());
+	}
+
+	enterCharityPhase(currentGame, output);
 }
+
+bool Player::loseItem(Game &currentGame, Card::SlotType slot)
+{
+	for (unsigned i = 0; i < equippedCards.size(); i++)
+	{
+		if ((*equippedCards[i]).cardType == Card::CardType::ITEM)
+		{
+			ItemCard *item = dynamic_cast<ItemCard*>(equippedCards[i]);
+			if ((*item).slotType == slot)
+			{
+				(*currentGame.getDiscardedTreasureCards()).addCard(item);	//add card to discard pile
+				equippedCards.erase(equippedCards.begin() + i);		//Remove card from hand
+				gear -= (*item).bonus;		//Remove bonus given by card
+				equippedSlots[slot] = false;		//Unoccupy item slot
+				return true;
+			}
+		}
+	}
+	return false;
+}
+
+bool Player::operator!=(const Player &p)
+{
+	return (name != p.name);
+}
+
 
 //***************     PRIVATE FUNCTIONS     ************************
 
 void Player::goUpLevel()
 {
 	//Don't go higher than level 10
-	if (!this->level == MAX_LEVEL)
+	if (level < MAX_LEVEL)
 		level++;
 }
 
 void Player::goDownLevel()
 {
 	//Don't go lower than level 1
-	if (!this->level == MIN_LEVEL)
+	if (level > MIN_LEVEL)
 		level--;
 }
 
@@ -320,8 +516,18 @@ bool Player::equipItemIsAllowed(const ItemCard &aCard)
 		return false;
 
 	//TEST FOR SLOT FILLED
-	if (equippedSlots[aCard.slotType])
-		return false;
+	if (aCard.slotType != Card::SlotType::NONE)
+	{
+		if (aCard.slotType == Card::SlotType::HEADGEAR || aCard.slotType == Card::SlotType::FOOTGEAR ||
+			aCard.slotType == Card::SlotType::ARMOR)
+		{
+			if (equippedSlots[aCard.slotType])
+				return false;
+		}
+		//Card is either OneHand or TwoHands
+		else if (equippedSlots[Card::SlotType::TWO_HANDS] || (aCard.slotType == Card::SlotType::TWO_HANDS && equippedSlots[Card::SlotType::ONE_HAND]))
+			return false;
+	}
 
 	//TEST FOR ITEM RESTRICTION
 	switch (aCard.restrictionKey)

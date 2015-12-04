@@ -39,6 +39,7 @@ private:
 	void playerEquippingTest();
 	void shuffleTest();
 	void gameTest();
+	void playGameTest();
 
 public:
 	Tester();

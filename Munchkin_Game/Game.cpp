@@ -19,6 +19,7 @@ Game::Game()
 	treasureDeck = Deck(Card::DeckType::TREASURE);
 	playerTurn = 0;
 	numPlayers = 0;
+	gameIsOver = false;
 	
 	for (int i = 0; i < NUM_SHUFFLES; i++)
 	{
@@ -38,12 +39,12 @@ void Game::addPlayer(Player p)
 	players.push_back(p);
 }
 
-void Game::beginDefaultGame()
+void Game::beginAutoGame()
 {
 	numPlayers = 4;
-	const int NUM_AI_PLAYERS = 3;
-	Player player = Player("Player", Player::PlayerType::HUMAN, Card::Gender::MALE);
-	addPlayer(player);
+	const int NUM_AI_PLAYERS = 4;
+	//Player player = Player("Player", Player::PlayerType::HUMAN, Card::Gender::MALE);
+	//addPlayer(player);
 
 	for (int i = 0; i < NUM_AI_PLAYERS; i++)
 	{
@@ -86,7 +87,7 @@ bool Game::isGameOver()
 
 	for (int i = 0; i < numPlayers; i++)
 	{
-		if (players[i].getLevel() == WINNING_LEVEL)
+		if (players[i].getLevel() >= WINNING_LEVEL)
 			return true;
 	}
 
@@ -96,53 +97,112 @@ bool Game::isGameOver()
 Card* Game::bustDownDoor()
 {
 	if (doorDeck.isEmpty())
-	{
-		const int NUM_SHUFFLES = 7;
-		for (int i = 0; i < NUM_SHUFFLES; i++)
-		{
-			discardedDoorCards.shuffle();
-		}
-		while (!discardedDoorCards.isEmpty())
-			doorDeck.addCard(discardedDoorCards.dealCard());
-	}
+		resetDoorDeck();
 	
 	cardInPlay = doorDeck.dealCard();
 
 	return cardInPlay;
 }
 
-int Game::allowBattleMods(int monsterStrength)
+void Game::resetDoorDeck()
+{
+	if (!discardedDoorCards.isEmpty())
+	{		
+		for (int i = 0; i < NUM_SHUFFLES; i++)
+			discardedDoorCards.shuffle();
+		while (!discardedDoorCards.isEmpty())
+			doorDeck.addCard(discardedDoorCards.dealCard());
+	}
+}
+
+void Game::resetTreasureDeck()
+{
+	if (!discardedTreasureCards.isEmpty())
+	{
+		for (int i = 0; i < NUM_SHUFFLES; i++)
+			discardedTreasureCards.shuffle();
+		while (!discardedTreasureCards.isEmpty())
+			treasureDeck.addCard(discardedTreasureCards.dealCard());
+	}
+}
+
+int Game::allowBattleMods(int monsterStrength, string &output)
 {
 	int newMonsterStrength = monsterStrength;
 	int monsterMods = 0;
+	bool playerDefeated = false;
+
 	for (unsigned i = 0; i < players.size(); i++)	//Give each player a chance to modify
 	{
-		if (players[i].getPlayerType() == Player::PlayerType::AI)	//AI actions
+		if (players[i].getPlayerType() == Player::PlayerType::AI && players[i] != (*getCurrentPlayer()))	//AI actions
 		{
 			int ableToAdd = players[i].getModdableAmount();
 			int neededToStopPlayer = (*getCurrentPlayer()).getBattleStrength() - newMonsterStrength;
 
 			if ((*getCurrentPlayer()).getLevel() > 5 && ableToAdd >= neededToStopPlayer)		//Don't waste modifiers if player is less than level 5
 			{
-				
 				for (unsigned j = 0; j < players[i].getCardsInHand().size(); j++)
 				{
 					if ((*players[i].getCardsInHand()[j]).cardType == Card::CardType::ONE_SHOT)
 					{
 						//Discard each one shot card that the player just used
 						OneShotCard *oneShot = dynamic_cast<OneShotCard*>(players[i].getCardsInHand()[j]);
-						newMonsterStrength += (*oneShot).bonus;
-						monsterMods += (*oneShot).bonus;
-						discardedTreasureCards.addCard(players[i].discardCard(oneShot));
-						j -= 1;	//Repair index if one card was removed. This might not work correctly.**********************
-						if (newMonsterStrength > (*getCurrentPlayer()).getBattleStrength())
-							break;
+
+						if (!(*oneShot).goUpLevel)
+						{
+							newMonsterStrength += (*oneShot).bonus;
+							monsterMods += (*oneShot).bonus;
+							discardedTreasureCards.addCard(players[i].discardCard(oneShot));
+							j -= 1;	//Repair index if one card was removed. This might not work correctly.**********************
+
+							output += "\t\t\t" + players[i].getName() + " Used a One Shot: +" + to_string((*oneShot).bonus) + " for monster.\n";
+							output += "\t\t\t\tNew Monster Strength: " + to_string(newMonsterStrength) + "\n";
+							if (newMonsterStrength > (*getCurrentPlayer()).getBattleStrength())
+							{
+								playerDefeated = true;
+								break;
+							}
+						}
 					}
 				}
 			}
 
 		}
+		if (playerDefeated)
+			break;
 
 	}
 	return monsterMods;
+}
+
+string Game::getWinningPlayer()
+{
+	const int WINNING_LEVEL = 10;
+
+	for (int i = 0; i < numPlayers; i++)
+	{
+		if (players[i].getLevel() == WINNING_LEVEL)
+			return players[i].getName();
+	}
+
+	return "NOBODY";
+}
+
+string Game::playGame()
+{
+	string result = "**********    BEGIN NEW GAME    **********\n";
+
+	while (!gameIsOver)
+	{
+		result += "\nCurrent Player: " + (*getCurrentPlayer()).getName() + 
+			"\tLevel: " + to_string((*getCurrentPlayer()).getLevel()) + "\tGear: " + 
+			to_string((*getCurrentPlayer()).getGear()) + "\n";
+
+		(*getCurrentPlayer()).beginTurn(*this, result);
+		nextPlayersTurn();
+	}
+
+	result += "\nWINNING PLAYER: " + getWinningPlayer();
+
+	return result;
 }
