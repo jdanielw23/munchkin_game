@@ -11,6 +11,7 @@
 
 #include <iostream>
 #include <sstream>
+#include <iomanip>
 #include <cstdio>
 #include <ctime>
 #include "Game.h"
@@ -23,12 +24,17 @@ using namespace std;
 int main()
 {
 	int numPlayers;
+	string playAgain = "";
 
 	// Declare our game class
 	Game MunchkinGame;
 
 	MunchkinGame.beginGame();
-	cout << MunchkinGame.playGame();
+	cout << MunchkinGame.playGame() << endl;
+
+	cout << "Play again? (y/n): ";
+	getline(cin, playAgain);
+
 
 	return 0;
 };

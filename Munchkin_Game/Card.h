@@ -77,6 +77,8 @@ struct Card	{
 		LOSE_BIG_ITEM,	//13
 		LOSE_TWO_ITEMS	//14
 	};
+	const string cardTypes[5] = {"MONSTER","RACE","CLASS","ONE-SHOT","ITEM"};
+
 
 	string title;
 	string description;
@@ -99,14 +101,15 @@ struct MonsterCard : Card {
 	RaceType raceTypeForBonus;
 	Gender genderTypeForBonus;
 
-	string print() { return (title + " " + to_string(level) + " " + to_string(numTreasures) + " " + to_string(badStuff) + "\n"); }
+	string print() { return (title + "   " + cardTypes[cardType] +
+		"   Level: " + to_string(level) + "\n"); }
 };
 
 struct ClassCard : Card {
 public:
 	ClassType classType;
 
-	string print() { return (title + " " + to_string(classType) + "\n"); }
+	string print() { return (title + "   " + cardTypes[cardType] + "\n"); }
 };
 
 struct RaceCard : Card {
@@ -114,7 +117,7 @@ struct RaceCard : Card {
 	string bonus1;
 	string bonus2;
 
-	string print() { return (title + " " + to_string(raceType) + " " + bonus1 + "\n"); }
+	string print() { return (title + "   " + cardTypes[cardType] + "\n"); }
 };
 
 struct ItemCard : Card {
@@ -128,8 +131,8 @@ struct ItemCard : Card {
 	int value;
 	int bonus;
 
-	string print() { return (title + 
-		"\tBonus: " + to_string(bonus) + "\n"); }
+	string print() { return (title + "   " + cardTypes[cardType] +
+		"   Bonus: +" + to_string(bonus) + "\n"); }
 };
 
 struct OneShotCard : Card {
@@ -137,7 +140,9 @@ struct OneShotCard : Card {
 	int value;
 	int bonus;
 
-	string print() { return (title + "\tValue: " + to_string(value) + "\tBonus: " + to_string(bonus) + "\n"); }
+	string print() { return (title + "   " + cardTypes[cardType] +
+		(goUpLevel ? "   Go Up a Level" : "   Value : $" + to_string(value) + 
+			"   Bonus: +" + to_string(bonus) ) +"\n"); }
 };
 
 #endif

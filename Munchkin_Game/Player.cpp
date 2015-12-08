@@ -129,27 +129,7 @@ void Player::beginTurn(Game &currentGame, string &output)
 
 		for (unsigned i = 0; i < cardsInHand.size(); i++)
 		{
-			cout << (*cardsInHand[i]).title << "  ";
-			switch ((*cardsInHand[i]).cardType)
-			{
-				case Card::CardType::ITEM:
-					cout << "ITEM ";
-				break;
-				case Card::CardType::CLASS:
-					cout << "CLASS ";
-					break;
-				case Card::CardType::RACE:
-					cout << "RACE";
-					break;
-				case Card::CardType::ONE_SHOT:
-					cout << "ONE SHOT";
-					break;
-				case Card::CardType::MONSTER:
-					cout << "MONSTER";
-					break;
-			}
-
-			cout << endl;
+			cout << (*cardsInHand[i]).print();
 		}
 
 		// Print the player's equipped cards
@@ -157,19 +137,19 @@ void Player::beginTurn(Game &currentGame, string &output)
 		cout << "\nEquipped Cards:";
 		for (unsigned i = 0; i < equippedCards.size(); i++)
 		{
-			cout << "\t" << (*equippedCards[i]).title << endl;
+			cout << "\t" << (*equippedCards[i]).print();
 		};
 		cout << endl;
 
 		// Allow the player to keep equipping items until we are done
 		while (!doneEquipping)
 		{
-			cout << "\nSelect a Card to Equip (type \"none\" to skip): " << endl;
+			cout << "\nSelect a Card to Equip (when finished, type \"done\"): " << endl;
 			getline(cin, nameOfCardToEquip);
 
 			found = false;
 
-			if (nameOfCardToEquip == "none")
+			if (nameOfCardToEquip == "done")
 				break;
 
 			// Repeat until we find the card
@@ -229,7 +209,7 @@ void Player::beginTurn(Game &currentGame, string &output)
 							{
 								goUpLevel();
 								discardCard(oneShot);
-								cout << "\t\tUse Go Up A Level Card: " << (*oneShot).title << "\n";
+								cout << "\t\tUsed Go Up A Level Card: " << (*oneShot).title << "\n";
 							}
 							else
 							{
@@ -301,7 +281,6 @@ void Player::enterBattlePhase(Game &currentGame, MonsterCard *monster, string &o
 			if (getBattleStrength() > monsterStrength)
 			{
 				winBattle(currentGame, monster, output);
-				output = "";
 			}
 			else if ((getBattleStrength() + getModdableAmount()) > monsterStrength)
 			{
