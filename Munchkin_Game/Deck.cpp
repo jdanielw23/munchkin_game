@@ -9,7 +9,6 @@
 * 11-14-15			JDW		Converted card types to pointers
 * 11-14-15			JDW		Implemented dealCard()
 * 11-16-15			CSG		Implemented shuffle and addCard functions
-* 
 */
 #include <vector>
 #include <string>
@@ -26,6 +25,8 @@ Deck::Deck()
 
 Deck::Deck(Card::DeckType deckType)
 {
+	// Define constants string for data files
+
 	const string MONSTER_CARDS_FILE = "monster_cards.txt";
 	const string CLASS_CARDS_FILE = "class_cards.txt";
 	const string RACE_CARDS_FILE = "race_cards.txt";
@@ -73,10 +74,6 @@ Deck::Deck(Card::DeckType deckType)
 	default:
 		break;
 	}
-}
-
-Deck::~Deck()
-{
 }
 
 void Deck::shuffle()

@@ -18,7 +18,6 @@
 #include <map>
 #include <iomanip>
 
-
 using namespace std;
 
 class Game;

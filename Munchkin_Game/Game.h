@@ -18,6 +18,7 @@
 
 using namespace std;
 
+
 class Player;
 
 class Game
@@ -26,7 +27,6 @@ public:
 	const int NUM_SHUFFLES = 7;
 
 	Game();
-	~Game();
 
 	//ACCESSORS
 	int getCurrentPlayerTurn() { return playerTurn; }	//Move to private later

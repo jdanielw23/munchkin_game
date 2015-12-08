@@ -4,23 +4,29 @@
 * Created 11-30-15	JDW
 * This class controls the gameplay.
 * REVISION HISTORY:
-* 
+* 12-07-15		   CSG+RSR	Added srand() to fix shuffle bug and allow games to be randomized - Paired Programming
+* 12-07-15		   CSG+RSR	Added comments - Paired Programming
 */
 
 #include "Game.h"
 
+// Default Constructor
 Game::Game()
 {
+	// Start the random generator
 	srand(time(NULL));
 
+	// How many times to shuffle the decks
 	const int NUM_SHUFFLES = 7;
 
+	// Initialize data
 	doorDeck = Deck(Card::DeckType::DOOR);
 	treasureDeck = Deck(Card::DeckType::TREASURE);
 	playerTurn = 0;
 	numPlayers = 0;
 	gameIsOver = false;
 	
+	// Shuffle the two decks
 	for (int i = 0; i < NUM_SHUFFLES; i++)
 	{
 		doorDeck.shuffle();
@@ -29,21 +35,20 @@ Game::Game()
 	
 }
 
-
-Game::~Game()
-{
-}
-
+// Add a player to the list of players
 void Game::addPlayer(Player p)
 {
 	players.push_back(p);
 }
 
+// Begin a game controlled by AI
 void Game::beginAutoGame()
 {
+	// Set our number of players
 	const int NUM_PLAYERS = 4;
 	numPlayers = NUM_PLAYERS;
 
+	// Add players to the list according to number of AI players
 	for (int i = 0; i < NUM_PLAYERS; i++)
 	{
 		Player comp = Player("Computer" + to_string(i + 1), Player::PlayerType::AI, Card::Gender::MALE);
@@ -53,47 +58,57 @@ void Game::beginAutoGame()
 	dealCards();
 }
 
+// Start a game with a human player and 3 AI players
 void Game::beginGame()
 {
+	// Set our number of players
 	const int NUM_PLAYERS = 3;
 	numPlayers = NUM_PLAYERS+1;
 
+	// Add players to the list according to number of AI players
 	for (int i = 0; i < NUM_PLAYERS; i++)
 	{
 		Player comp = Player("Computer" + to_string(i + 1), Player::PlayerType::AI, Card::Gender::MALE);
 		addPlayer(comp);
 	}
 
+	// Add a Human Player
 	Player comp = Player("Player", Player::PlayerType::HUMAN, Card::Gender::MALE);
 	addPlayer(comp);
 
 	dealCards();
 }
 
+// Actually play the game
 string Game::playGame()
 {
 	cout << "**********    BEGIN NEW GAME    **********\n";
 
+	// loop until game is done
 	while (!gameIsOver)
 	{
 		string result = "";
 
+		// Print out player info
 		cout << "\nCurrent Player: " << (*getCurrentPlayer()).getName() <<
 			"\tLevel: " << to_string((*getCurrentPlayer()).getLevel()) << "\tGear: " <<
 			to_string((*getCurrentPlayer()).getGear()) << "\n";
 
+		// Begin player's turn
 		(*getCurrentPlayer()).beginTurn(*this, result);
 
+		// Print the result
 		cout << result;
 
+		// Proceed to next player's turn
 		nextPlayersTurn();
 	}
 
-	cout << "\nWINNING PLAYER: " << getWinningPlayer();
-
-	return "";
+	// Tell us who the winner is
+	return "\nWINNING PLAYER: " + getWinningPlayer();
 }
 
+// Move and begin next player's turn.
 int Game::nextPlayersTurn()
 {
 	players[playerTurn].setTurnPhase(Player::TurnPhase::WAITING);	//End current player's turn

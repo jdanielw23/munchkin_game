@@ -8,12 +8,11 @@
 
 #include "Player.h"
 
-//TODO: Change "output +=" to "cout <<"
 //TODO: Fill in methods for loseBattle() bad stuff
-//TODO: Implement non-AI actions
 
 Player::Player()
 {
+	// Initialize data
 	level = MIN_LEVEL;
 	gear = 0;
 	class1 = Card::ClassType::NO_CLASS;
@@ -32,6 +31,7 @@ Player::Player()
 	equippedSlots[Card::SlotType::ARMOR] = false;
 }
 
+// Constructor for a player that accepts arguments
 Player::Player(string n, PlayerType p, Card::Gender g) : Player()
 {
 	name = n;
@@ -39,12 +39,9 @@ Player::Player(string n, PlayerType p, Card::Gender g) : Player()
 	gender = g;
 }
 
-Player::~Player()
-{
-}
-
 //***************     PUBLIC FUNCTIONS     ************************
 
+// Start a player's turn
 void Player::beginTurn(Game &currentGame, string &output)
 {
 	setTurnPhase(TurnPhase::EQUIPPING);
@@ -54,7 +51,7 @@ void Player::beginTurn(Game &currentGame, string &output)
 
 	if (playerType == PlayerType::AI)
 	{
-		//In Equipping Phase
+		//In Equipping Phase; if we can equip an item, than do it for all card types
 		for (unsigned i = 0; i < cardsInHand.size(); i++)
 		{
 			if ((*cardsInHand[i]).cardType == Card::CardType::ITEM)
@@ -154,14 +151,20 @@ void Player::beginTurn(Game &currentGame, string &output)
 			cout << endl;
 		}
 
+		cout << "\nEquipped Cards:";
+		for (unsigned i = 0; i < equippedCards.size(); i++)
+		{
+			cout << "\t" << (*equippedCards[i]).title << endl;
+		};
+
+		cout << endl;
+
 		bool doneEquipping = false;
-		char playerResponse = 'n';
 		bool found = false;
 
 		while (!doneEquipping)
 		{
 			cout << "\nSelect a Card to Equip (type \"none\" to skip): " << endl;
-			cin.ignore();
 			getline(cin, nameOfCardToEquip);
 
 			found = false;
@@ -239,14 +242,15 @@ void Player::beginTurn(Game &currentGame, string &output)
 					break;
 				}
 			}
+			
+			string playerResponse = "n";
+			cout << "Equip More Cards? (y/n): " << endl;
+			getline(cin, playerResponse);
 
-			cout << "Done Equipping? (y/n): " << endl;
-			cin >> playerResponse;
-
-			if (playerResponse == 'y')
+			if (playerResponse == "n")
 			{
 				doneEquipping = true;
-			};
+			}
 		}
 
 		output = "";
@@ -271,10 +275,6 @@ void Player::beginTurn(Game &currentGame, string &output)
 			enterDecidingPhase(currentGame, output);
 			cout << output << endl;
 		}
-
-
-		int k = 0;
-		cin >> k;
 	}
 }
 
@@ -292,7 +292,10 @@ void Player::enterBattlePhase(Game &currentGame, MonsterCard *monster, string &o
 			monsterStrength += currentGame.allowBattleMods(monsterStrength, output);
 
 			if (getBattleStrength() > monsterStrength)
+			{
 				winBattle(currentGame, monster, output);
+				output = "";
+			}
 			else if ((getBattleStrength() + getModdableAmount()) > monsterStrength)
 			{
 				int modAmount = 0;
@@ -371,34 +374,66 @@ void Player::enterBattlePhase(Game &currentGame, MonsterCard *monster, string &o
 
 			if (getBattleStrength() > monsterStrength)
 				winBattle(currentGame, monster, output);
+
 			else if ((getBattleStrength() + getModdableAmount()) > monsterStrength)
 			{
 				int modAmount = 0;
 				//Play his own cards to beef himself up
-				for (unsigned j = 0; j < getCardsInHand().size(); j++)
+				OneShotCard *oneShot = NULL;
+
+				cout << "One Shot Cards:" << endl;
+				for (unsigned i = 0; i < cardsInHand.size(); i++)
 				{
-					if ((*getCardsInHand()[j]).cardType == Card::CardType::ONE_SHOT)
+					if ((*cardsInHand[i]).cardType == Card::CardType::ONE_SHOT)
 					{
-						//Discard each one shot card that the player just used
-						OneShotCard *oneShot = dynamic_cast<OneShotCard*>(getCardsInHand()[j]);
-
-						if (!(*oneShot).goUpLevel)
-						{
-							modAmount += (*oneShot).bonus;
-							(*currentGame.getDiscardedTreasureCards()).addCard(discardCard(oneShot));
-							j -= 1;	//Repair index if one card was removed. This might not work correctly.**********************
-
-							output += "\t\t\tUsed a One Shot: +" + to_string((*oneShot).bonus) + " for player.\n";
-							if ((getBattleStrength() + modAmount) > monsterStrength)
-								break;
-						}
+						cout << "\t" << (*cardsInHand[i]).title << endl;
 					}
+				};
+
+				while (!found)
+				{
+					cout << "Pick a one shot card to use (or type \"none\" to skip): ";
+					getline(cin, nameOfOneShotCard);
+					found = false;
+
+					for (unsigned i = 0; i < cardsInHand.size(); i++)
+					{
+						if ((*cardsInHand[i]).cardType == Card::CardType::ONE_SHOT && (*cardsInHand[i]).title == nameOfOneShotCard)
+						{
+							oneShot = dynamic_cast<OneShotCard*>(getCardsInHand()[i]);
+							found = true;
+						}
+					};
+
+					if (!found)
+					{
+						cout << "You don't have a One Shot card called \"" << nameOfOneShotCard << "\". Try again..." << endl;
+					}
+				};
+					
+				if (!(*oneShot).goUpLevel)
+				{
+					modAmount += (*oneShot).bonus;
+					(*currentGame.getDiscardedTreasureCards()).addCard(discardCard(oneShot));
+
+					output += "\t\t\tUsed a One Shot: +" + to_string((*oneShot).bonus) + " for player.\n";
+					if ((getBattleStrength() + modAmount) > monsterStrength)
+						winBattle(currentGame, monster, output);
+						cout << output;
+						output = "";
 				}
-				winBattle(currentGame, monster, output);
 			}
-			else
-				loseBattle(currentGame, monster, output);
+
+			winBattle(currentGame, monster, output);
+			cout << output << endl;
+
 		}
+		else
+		{
+			loseBattle(currentGame, monster, output);
+			cout << output << endl;
+			output = "";
+		};
 	}
 }
 
@@ -566,11 +601,16 @@ void Player::enterCharityPhase(Game &currentGame, string &output)
 	}
 	else
 	{
-		/*
-		TODO: Implement non-AI player code
-		Player needs to be able to choose which of his cards he wants to discard until he
-		has the correct number of cards remaining (5 if not a dwarf, 6 if he is a dwarf)
-		*/
+		while (cardsInHand.size() > maxCards)
+		{
+			Card *card = cardsInHand.front();
+			cardsInHand.erase(cardsInHand.begin());
+			if ((*card).cardType == Card::CardType::ITEM ||
+				(*card).cardType == Card::CardType::ONE_SHOT)
+				(*currentGame.getDiscardedTreasureCards()).addCard(card);
+			else
+				(*currentGame.getDiscardedDoorCards()).addCard(card);
+		}
 	}
 
 	setTurnPhase(TurnPhase::WAITING);
