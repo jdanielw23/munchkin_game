@@ -9,6 +9,7 @@
 #ifndef DECK_H
 #define DECK_H
 #pragma once
+#include <ctime>
 #include <stack>
 #include <vector>
 #include "Card.h"

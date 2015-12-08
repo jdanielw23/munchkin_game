@@ -86,11 +86,11 @@ void Deck::shuffle()
 	stack<Card*> shuffleDeckTwo;
 	stack<Card*> shuffleDeckThree;
 	stack<Card*> shuffleDeckFour;
-	//stack<Card*> shuffleDeckFive;
 	
 	while( !(deck.empty()))				//This loop splits the deck up into 4 random shuffling decks
 	{
 		randomDeck = rand() % 4 + 1;		//generate a random number between 1 and 4
+
 		if(1 == randomDeck)
 			shuffleDeckOne.push(deck.top());
 		
@@ -134,6 +134,7 @@ void Deck::shuffle()
 			shuffleDeckFour.pop();
 		}
 	}
+
 }
 
 Card* Deck::dealCard()

@@ -27,7 +27,13 @@ int main()
 	// Declare our game class
 	Game MunchkinGame;
 
+	MunchkinGame.beginGame();
+	cout << MunchkinGame.playGame();
 
-	
+	cout << "GAME ENDED" << endl;
+
+	int k;
+	cin >> k;
+
 	return 0;
 };

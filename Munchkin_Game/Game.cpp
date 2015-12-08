@@ -9,10 +9,10 @@
 
 #include "Game.h"
 
-
-
 Game::Game()
 {
+	srand(time(NULL));
+
 	const int NUM_SHUFFLES = 7;
 
 	doorDeck = Deck(Card::DeckType::DOOR);
@@ -53,23 +53,45 @@ void Game::beginAutoGame()
 	dealCards();
 }
 
+void Game::beginGame()
+{
+	const int NUM_PLAYERS = 3;
+	numPlayers = NUM_PLAYERS+1;
+
+	for (int i = 0; i < NUM_PLAYERS; i++)
+	{
+		Player comp = Player("Computer" + to_string(i + 1), Player::PlayerType::AI, Card::Gender::MALE);
+		addPlayer(comp);
+	}
+
+	Player comp = Player("Player", Player::PlayerType::HUMAN, Card::Gender::MALE);
+	addPlayer(comp);
+
+	dealCards();
+}
+
 string Game::playGame()
 {
-	string result = "**********    BEGIN NEW GAME    **********\n";
+	cout << "**********    BEGIN NEW GAME    **********\n";
 
 	while (!gameIsOver)
 	{
-		result += "\nCurrent Player: " + (*getCurrentPlayer()).getName() +
-			"\tLevel: " + to_string((*getCurrentPlayer()).getLevel()) + "\tGear: " +
-			to_string((*getCurrentPlayer()).getGear()) + "\n";
+		string result = "";
+
+		cout << "\nCurrent Player: " << (*getCurrentPlayer()).getName() <<
+			"\tLevel: " << to_string((*getCurrentPlayer()).getLevel()) << "\tGear: " <<
+			to_string((*getCurrentPlayer()).getGear()) << "\n";
 
 		(*getCurrentPlayer()).beginTurn(*this, result);
+
+		cout << result;
+
 		nextPlayersTurn();
 	}
 
-	result += "\nWINNING PLAYER: " + getWinningPlayer();
+	cout << "\nWINNING PLAYER: " << getWinningPlayer();
 
-	return result;
+	return "";
 }
 
 int Game::nextPlayersTurn()

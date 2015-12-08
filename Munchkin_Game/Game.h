@@ -11,6 +11,7 @@
 #pragma once
 #include <vector>
 #include <string>
+#include <iostream>
 #include "Player.h"
 #include "Deck.h"
 #include "Card.h"
@@ -44,6 +45,7 @@ public:
 	void addPlayer(Player player);
 	void dealCards();
 	void beginAutoGame();		//Hopefully just for testing
+	void beginGame();		//Hopefully just for testing
 	string playGame();
 	int nextPlayersTurn();
 	Card* bustDownDoor();
