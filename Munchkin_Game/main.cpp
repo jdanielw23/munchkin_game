@@ -30,10 +30,5 @@ int main()
 	MunchkinGame.beginGame();
 	cout << MunchkinGame.playGame();
 
-	cout << "GAME ENDED" << endl;
-
-	int k;
-	cin >> k;
-
 	return 0;
 };
