@@ -27,12 +27,7 @@ public:
 	Game();
 	~Game();
 
-	//HERE TEMPORARILY FOR TESTING - SHOULD BE PRIVATE
-	Deck treasureDeck;
-	Deck doorDeck;
-	Deck discardedDoorCards;
-	Deck discardedTreasureCards;
-
+	//ACCESSORS
 	int getCurrentPlayerTurn() { return playerTurn; }	//Move to private later
 	Player* getCurrentPlayer() { return &players[playerTurn]; }
 	Deck* getDiscardedTreasureCards() { return &discardedTreasureCards; }
@@ -41,33 +36,35 @@ public:
 	Deck* getDoorDeck() { return &doorDeck; }
 	Card* getCardInPlay() { return cardInPlay; }
 
+	//SETTERS
 	void setGameIsOver(bool gameOver) { gameIsOver = gameOver; }
 	void setCardInPlay(Card *aCard) { cardInPlay = aCard; }
 
-	void dealCards();
-	int nextPlayersTurn();
-	bool isGameOver();
+	//USEFUL FUNCTIONS
 	void addPlayer(Player player);
-	Card* bustDownDoor();
+	void dealCards();
 	void beginAutoGame();		//Hopefully just for testing
 	string playGame();
+	int nextPlayersTurn();
+	Card* bustDownDoor();
 	int allowBattleMods(int monsterStrength, string &output);		//return modification amount;
 	void resetTreasureDeck();
 	void resetDoorDeck();
 
+	bool isGameOver();
 	string getWinningPlayer();
-	
 
 private:
 	const int CARDS_TO_DEAL = 4;
 	vector<Player> players;
-	
+	Deck treasureDeck;
+	Deck doorDeck;
+	Deck discardedDoorCards;
+	Deck discardedTreasureCards;
 	int playerTurn;
 	int numPlayers;
 	Card *cardInPlay;
 	bool gameIsOver;
-
-	//PRIVATE FUNCTIONS
 	
 };
 

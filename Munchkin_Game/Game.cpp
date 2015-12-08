@@ -41,18 +41,35 @@ void Game::addPlayer(Player p)
 
 void Game::beginAutoGame()
 {
-	numPlayers = 4;
-	const int NUM_AI_PLAYERS = 4;
-	//Player player = Player("Player", Player::PlayerType::HUMAN, Card::Gender::MALE);
-	//addPlayer(player);
+	const int NUM_PLAYERS = 4;
+	numPlayers = NUM_PLAYERS;
 
-	for (int i = 0; i < NUM_AI_PLAYERS; i++)
+	for (int i = 0; i < NUM_PLAYERS; i++)
 	{
 		Player comp = Player("Computer" + to_string(i + 1), Player::PlayerType::AI, Card::Gender::MALE);
 		addPlayer(comp);
 	}
 
 	dealCards();
+}
+
+string Game::playGame()
+{
+	string result = "**********    BEGIN NEW GAME    **********\n";
+
+	while (!gameIsOver)
+	{
+		result += "\nCurrent Player: " + (*getCurrentPlayer()).getName() +
+			"\tLevel: " + to_string((*getCurrentPlayer()).getLevel()) + "\tGear: " +
+			to_string((*getCurrentPlayer()).getGear()) + "\n";
+
+		(*getCurrentPlayer()).beginTurn(*this, result);
+		nextPlayersTurn();
+	}
+
+	result += "\nWINNING PLAYER: " + getWinningPlayer();
+
+	return result;
 }
 
 int Game::nextPlayersTurn()
@@ -79,19 +96,6 @@ void Game::dealCards()
 		}
 		
 	}
-}
-
-bool Game::isGameOver()
-{
-	const int WINNING_LEVEL = 10;
-
-	for (int i = 0; i < numPlayers; i++)
-	{
-		if (players[i].getLevel() >= WINNING_LEVEL)
-			return true;
-	}
-
-	return false;
 }
 
 Card* Game::bustDownDoor()
@@ -175,6 +179,19 @@ int Game::allowBattleMods(int monsterStrength, string &output)
 	return monsterMods;
 }
 
+bool Game::isGameOver()
+{
+	const int WINNING_LEVEL = 10;
+
+	for (int i = 0; i < numPlayers; i++)
+	{
+		if (players[i].getLevel() >= WINNING_LEVEL)
+			return true;
+	}
+
+	return false;
+}
+
 string Game::getWinningPlayer()
 {
 	const int WINNING_LEVEL = 10;
@@ -188,21 +205,3 @@ string Game::getWinningPlayer()
 	return "NOBODY";
 }
 
-string Game::playGame()
-{
-	string result = "**********    BEGIN NEW GAME    **********\n";
-
-	while (!gameIsOver)
-	{
-		result += "\nCurrent Player: " + (*getCurrentPlayer()).getName() + 
-			"\tLevel: " + to_string((*getCurrentPlayer()).getLevel()) + "\tGear: " + 
-			to_string((*getCurrentPlayer()).getGear()) + "\n";
-
-		(*getCurrentPlayer()).beginTurn(*this, result);
-		nextPlayersTurn();
-	}
-
-	result += "\nWINNING PLAYER: " + getWinningPlayer();
-
-	return result;
-}

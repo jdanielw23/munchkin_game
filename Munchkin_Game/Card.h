@@ -128,7 +128,8 @@ struct ItemCard : Card {
 	int value;
 	int bonus;
 
-	string print() { return (title + "\tValue: " + to_string(value) + "\tBonus: " + to_string(bonus) + "\n"); }
+	string print() { return (title + 
+		"\tBonus: " + to_string(bonus) + "\n"); }
 };
 
 struct OneShotCard : Card {

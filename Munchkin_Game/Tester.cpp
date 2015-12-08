@@ -120,12 +120,12 @@ void Tester::gameTest()
 
 	myFile << "After dealing cards:" << endl;
 	myFile << "*****    DOOR DECK    *****" << endl;
-	myFile << "*****    SIZE: " + to_string(newGame.doorDeck.getNumCards()) + "    *****" << endl;
-	myFile << newGame.doorDeck.print() << endl;
+	myFile << "*****    SIZE: " + to_string((*newGame.getDoorDeck()).getNumCards()) + "    *****" << endl;
+	myFile << (*newGame.getDoorDeck()).print() << endl;
 
 	myFile << "*****    TREASURE DECK    *****" << endl;
-	myFile << "*****    SIZE: " + to_string(newGame.treasureDeck.getNumCards()) + "    *****" << endl;
-	myFile << newGame.treasureDeck.print() << endl;
+	myFile << "*****    SIZE: " + to_string((*newGame.getTreasureDeck()).getNumCards()) + "    *****" << endl;
+	myFile << (*newGame.getTreasureDeck()).print() << endl;
 
 	Player* currentPlayer = newGame.getCurrentPlayer();
 
@@ -147,7 +147,7 @@ void Tester::playGameTest()
 	Game game;
 	game.beginAutoGame();
 	
-	myFile << "WINNING PLAYER: " << game.playGame() << endl;
+	myFile << game.playGame() << endl;
 }
 
 

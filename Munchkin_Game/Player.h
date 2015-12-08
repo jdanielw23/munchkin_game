@@ -39,7 +39,6 @@ public:
 	PlayerType getPlayerType() { return playerType; }
 	bool isSuperMunchkin() { return bIsSuperMunchkin; }
 	bool isHalfBreed() { return bIsHalfBreed; }
-	bool isInBattle() { return bInBattle; }
 	bool hasBigItem() { return bHasBigItem; }
 	int getGear() { return gear; }
 	int getLevel() { return level; }
@@ -48,41 +47,32 @@ public:
 	vector<Card*> getEquippedCards() { return equippedCards; }
 	TurnPhase getTurnPhase() { return turnPhase; }
 
-	int getModdableAmount();
-
 	//ACTION FUNCTIONS
 	void receiveCard(Card* aCard);
 	Card* discardCard(Card* aCard);
-	void askForHelp();
+	void equipItem(ItemCard* aCard);
+	void equipClass(ClassCard* aCard);
+	void equipRace(RaceCard* aCard);
+
 	void beginTurn(Game &currentGame, string &output);
 	void enterBattlePhase(Game &currentGame, MonsterCard *monster, string &output);
 	void enterDecidingPhase(Game &currentGame, string &output);
 	void enterCharityPhase(Game &currentGame, string &output);
-
-
 	void loseBattle(Game &currentGame, MonsterCard *monster, string &output);
 	void winBattle(Game &currentGame, MonsterCard *monster, string &output);	//return true if player has reached level 10
 
-	void equipItem(ItemCard* aCard);
-	void equipClass(ClassCard* aCard);
-	void equipRace(RaceCard* aCard);
-	
+	//BAD STUFF FUNCTIONS
 	bool loseItem(Game &currentGame, Card::SlotType slot);	//return true if item was lost
 
+	//OTHER USEFUL FUNCTIONS
 	void setTurnPhase(TurnPhase phase) { turnPhase = phase; }
-	void setSuperMunchkin(bool super) { bIsSuperMunchkin = super; }
-	void setHalfBreed(bool half) { bIsHalfBreed = half; }
-
-	bool equipItemIsAllowed(const ItemCard &aCard);
-	bool equipClassIsAllowed(const ClassCard &aCard);
-	bool equipRaceIsAllowed(const RaceCard &aCard);
-
 	int getMonsterStrength(MonsterCard *monster);
+	int getModdableAmount();
 
 	bool operator!=(const Player &p);
 
 	//TODO: Here for debugging only 
-	string printCardsInHand();
+	string printUsableCardsInHand();
 	
 private:
 	const int MAX_LEVEL = 10;
@@ -105,7 +95,6 @@ private:
 
 	bool bIsSuperMunchkin;	//a card that allows two classes
 	bool bIsHalfBreed;		//a card that allows two races
-	bool bInBattle;
 	bool bHasBigItem;
 
 	int gear;
@@ -114,6 +103,9 @@ private:
 	//PRIVATE FUNCTIONS	
 	void goUpLevel();		//Don't go higher than level 10
 	void goDownLevel();		//Don't go lower than level 1
+	bool equipItemIsAllowed(const ItemCard &aCard);
+	bool equipClassIsAllowed(const ClassCard &aCard);
+	bool equipRaceIsAllowed(const RaceCard &aCard);
 
 
 
