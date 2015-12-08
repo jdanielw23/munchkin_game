@@ -7,6 +7,7 @@
 * 11-01-15			RSR		Renamed variables to prevent conflicts with accessor names.
 * 11-01-15			RSR		Changed include to card.h instead of card.cpp
 * 11-14-15			JDW		Added some functions 
+* 12-07-15		  CSG+RSR	Removed unused destructor
 */
 #ifndef PLAYER_H
 #define PLAYER_H
@@ -31,8 +32,6 @@ public:
 	//CONSTRUCTORS
 	Player();
 	Player(string n, PlayerType p, Card::Gender g);
-
-	~Player();
 
 	//ACCESSORS
 	string getName() { return name; }

@@ -114,16 +114,17 @@ void Player::beginTurn(Game &currentGame, string &output)
 	}
 	else
 	{
-		/*
-		TODO: Implement non-AI player code
-		Player needs to be able to see all of the cards that he is ALLOWED to equip
-		This includes class, race, item, and goUpALevel cards
-		*/
+		//****************************************************//
+		//				      PLAYER LOGIC                    //
+		//****************************************************//
+
+		// Print the cards the player has in their hand
 		cout << endl << "Cards in Hand: " << endl;
 
 		int numEquippableCards = 0;
 		int numItemCards = 0;
-
+		bool doneEquipping = false;
+		bool found = false;
 		string nameOfCardToEquip = "";
 
 		for (unsigned i = 0; i < cardsInHand.size(); i++)
@@ -151,17 +152,16 @@ void Player::beginTurn(Game &currentGame, string &output)
 			cout << endl;
 		}
 
+		// Print the player's equipped cards
+
 		cout << "\nEquipped Cards:";
 		for (unsigned i = 0; i < equippedCards.size(); i++)
 		{
 			cout << "\t" << (*equippedCards[i]).title << endl;
 		};
-
 		cout << endl;
 
-		bool doneEquipping = false;
-		bool found = false;
-
+		// Allow the player to keep equipping items until we are done
 		while (!doneEquipping)
 		{
 			cout << "\nSelect a Card to Equip (type \"none\" to skip): " << endl;
@@ -172,9 +172,12 @@ void Player::beginTurn(Game &currentGame, string &output)
 			if (nameOfCardToEquip == "none")
 				break;
 
+			// Repeat until we find the card
 			while (!found)
 			{
-				//In Equipping Phase
+				// In Equipping Phase - if we can equip the selected item, do it. otherwise
+				// tell the player why we can't find or equip the card.
+
 				for (unsigned i = 0; i < cardsInHand.size(); i++)
 				{
 					if ((*cardsInHand[i]).title == nameOfCardToEquip)
@@ -236,6 +239,7 @@ void Player::beginTurn(Game &currentGame, string &output)
 					}
 				}
 
+				// We have exhausted the list, we don't have the card.
 				if (!found)
 				{
 					cout << "The card \"" << nameOfCardToEquip << "\" is not in your hand. Maybe you misspelled it?" << endl << endl;
@@ -243,10 +247,12 @@ void Player::beginTurn(Game &currentGame, string &output)
 				}
 			}
 			
+			// Ask the player if they want to equip more cards.
 			string playerResponse = "n";
 			cout << "Equip More Cards? (y/n): " << endl;
 			getline(cin, playerResponse);
 
+			// Continue if no
 			if (playerResponse == "n")
 			{
 				doneEquipping = true;
@@ -277,6 +283,7 @@ void Player::beginTurn(Game &currentGame, string &output)
 		}
 	}
 }
+
 
 void Player::enterBattlePhase(Game &currentGame, MonsterCard *monster, string &output)
 {
@@ -355,9 +362,8 @@ void Player::enterBattlePhase(Game &currentGame, MonsterCard *monster, string &o
 	else
 	{
 		/*
-		TODO: Implement non-AI player code
-		Player needs to be able to use one-shot cards to beef himself up if necessary
-		The computer also needs to have a chance to beef up the monster
+		TODO: Player needs to be able to use one-shot cards to beef himself up if necessary
+		TODO: The computer also needs to have a chance to beef up the monster
 		*/
 
 		int monsterStrength = getMonsterStrength(monster);

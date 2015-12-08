@@ -5,7 +5,6 @@
 * This is the super structure for all of the different types of cards
 * REVISION HISTORY:
 * 11-01-15			RSR		Added string header to fix compilation errors
-* 12-07-15			RSR		Added comments
 */
 #ifndef CARD_H
 #define CARD_H

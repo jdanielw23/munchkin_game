@@ -4,6 +4,7 @@
 * Created 11-30-15	JDW
 * This class controls the gameplay.
 * REVISION HISTORY:
+* 12-07-15		  CSG+RSR	Removed unused destructor
 *
 */
 #ifndef GAME_H

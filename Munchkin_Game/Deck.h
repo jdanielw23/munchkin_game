@@ -4,6 +4,7 @@
 * Created 10-29-15	JDW
 * This class handles shuffling and dealing of a deck of cards
 * REVISION HISTORY:
+* 12-07-15		  CSG+RSR	Removed unused destructor
 *
 */
 #ifndef DECK_H
