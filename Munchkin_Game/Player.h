@@ -15,6 +15,7 @@
 #include "Game.h"
 #include "Card.h"
 #include <string>
+#include <sstream>
 #include <vector>
 #include <map>
 #include <iomanip>
@@ -53,12 +54,12 @@ public:
 	void equipClass(ClassCard* aCard);
 	void equipRace(RaceCard* aCard);
 
-	void beginTurn(Game &currentGame, string &output);
-	void enterBattlePhase(Game &currentGame, MonsterCard *monster, string &output);
-	void enterDecidingPhase(Game &currentGame, string &output);
-	void enterCharityPhase(Game &currentGame, string &output);
-	void loseBattle(Game &currentGame, MonsterCard *monster, string &output);
-	void winBattle(Game &currentGame, MonsterCard *monster, string &output);	//return true if player has reached level 10
+	void beginTurn(Game &currentGame);
+	void enterBattlePhase(Game &currentGame, MonsterCard *monster);
+	void enterDecidingPhase(Game &currentGame);
+	void enterCharityPhase(Game &currentGame);
+	void loseBattle(Game &currentGame, MonsterCard *monster);
+	void winBattle(Game &currentGame, MonsterCard *monster);	//return true if player has reached level 10
 
 	//BAD STUFF FUNCTIONS
 	bool loseItem(Game &currentGame, Card::SlotType slot);	//return true if item was lost
@@ -70,9 +71,6 @@ public:
 
 	bool operator!=(const Player &p);
 
-	//TODO: Here for debugging only 
-	string printUsableCardsInHand();
-	
 private:
 	const int MAX_LEVEL = 10;
 	const int MIN_LEVEL = 1;
@@ -105,8 +103,9 @@ private:
 	bool equipItemIsAllowed(const ItemCard &aCard);
 	bool equipClassIsAllowed(const ClassCard &aCard);
 	bool equipRaceIsAllowed(const RaceCard &aCard);
-
-
+	map<int, int> printUsableCardsInHand();
+	int beefMeUp(int strengthNeeded);	//returns mod amount
+	void printOneShotCards();
 
 };
 

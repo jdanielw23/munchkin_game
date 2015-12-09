@@ -147,7 +147,7 @@ void Tester::playGameTest()
 	Game game;
 	game.beginAutoGame();
 	
-	myFile << game.playGame() << endl;
+	game.playGame();
 }
 
 

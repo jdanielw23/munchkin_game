@@ -80,32 +80,28 @@ void Game::beginGame()
 }
 
 // Actually play the game
-string Game::playGame()
+void Game::playGame()
 {
 	cout << "**********    BEGIN NEW GAME    **********\n";
 
 	// loop until game is done
 	while (!gameIsOver)
 	{
-		string result = "";
 
 		// Print out player info
 		cout << "\nCurrent Player: " << (*getCurrentPlayer()).getName() <<
-			"\tLevel: " << to_string((*getCurrentPlayer()).getLevel()) << "\tGear: " <<
-			to_string((*getCurrentPlayer()).getGear()) << "\n";
+			"\tLevel: " << to_string((*getCurrentPlayer()).getLevel()) <<
+			"\tGear: " << to_string((*getCurrentPlayer()).getGear()) << "\n";
 
 		// Begin player's turn
-		(*getCurrentPlayer()).beginTurn(*this, result);
-
-		// Print the result
-		cout << result;
+		(*getCurrentPlayer()).beginTurn(*this);
 
 		// Proceed to next player's turn
 		nextPlayersTurn();
 	}
 
 	// Tell us who the winner is
-	return "\nWINNING PLAYER: " + getWinningPlayer();
+	cout << "\nWINNING PLAYER: " + getWinningPlayer();
 }
 
 // Move and begin next player's turn.
@@ -137,6 +133,8 @@ void Game::dealCards()
 
 Card* Game::bustDownDoor()
 {
+	cout << "\t****   BUST DOWN THE DOOR   ****\n";
+
 	if (doorDeck.isEmpty())
 		resetDoorDeck();
 	
@@ -167,7 +165,7 @@ void Game::resetTreasureDeck()
 	}
 }
 
-int Game::allowBattleMods(int monsterStrength, string &output)
+int Game::allowBattleMods(int monsterStrength)
 {
 	int newMonsterStrength = monsterStrength;
 	int monsterMods = 0;
@@ -196,8 +194,8 @@ int Game::allowBattleMods(int monsterStrength, string &output)
 							discardedTreasureCards.addCard(players[i].discardCard(oneShot));
 							j -= 1;	//Repair index if one card was removed. This might not work correctly.**********************
 
-							output += "\t\t\t" + players[i].getName() + " Used a One Shot: +" + to_string((*oneShot).bonus) + " for monster.\n";
-							output += "\t\t\t\tNew Monster Strength: " + to_string(newMonsterStrength) + "\n";
+							cout << "\t\t\t" + players[i].getName() + " Used a One Shot: +" + to_string((*oneShot).bonus) + " for monster.\n";
+							cout << "\t\t\t\tNew Monster Strength: " + to_string(newMonsterStrength) + "\n";
 							if (newMonsterStrength > (*getCurrentPlayer()).getBattleStrength())
 							{
 								playerDefeated = true;

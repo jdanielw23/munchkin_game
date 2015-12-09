@@ -47,10 +47,10 @@ public:
 	void dealCards();
 	void beginAutoGame();		//Hopefully just for testing
 	void beginGame();		//Hopefully just for testing
-	string playGame();
+	void playGame();
 	int nextPlayersTurn();
 	Card* bustDownDoor();
-	int allowBattleMods(int monsterStrength, string &output);		//return modification amount;
+	int allowBattleMods(int monsterStrength);		//return modification amount;
 	void resetTreasureDeck();
 	void resetDoorDeck();
 

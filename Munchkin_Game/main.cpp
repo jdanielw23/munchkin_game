@@ -23,18 +23,20 @@ using namespace std;
 // Name of Window class
 int main()
 {
-	int numPlayers;
 	string playAgain = "";
 
 	// Declare our game class
-	Game MunchkinGame;
+	do
+	{
+		Game MunchkinGame;
+		MunchkinGame.beginAutoGame();
+		MunchkinGame.playGame();
+		cout << endl;
 
-	MunchkinGame.beginGame();
-	cout << MunchkinGame.playGame() << endl;
+		cout << "Play again? (y/n): ";
+		getline(cin, playAgain);
 
-	cout << "Play again? (y/n): ";
-	getline(cin, playAgain);
-
+	} while (playAgain != "n");
 
 	return 0;
 };

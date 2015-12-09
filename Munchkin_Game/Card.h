@@ -101,15 +101,16 @@ struct MonsterCard : Card {
 	RaceType raceTypeForBonus;
 	Gender genderTypeForBonus;
 
-	string print() { return (title + "   " + cardTypes[cardType] +
-		"   Level: " + to_string(level) + "\n"); }
+	string print() { return (cardTypes[cardType] + "   " + title +
+		"   Level: " + to_string(level) + 
+		"   " + description + "\n"); }
 };
 
 struct ClassCard : Card {
 public:
 	ClassType classType;
 
-	string print() { return (title + "   " + cardTypes[cardType] + "\n"); }
+	string print() { return (cardTypes[cardType] + "   " + title + "\n"); }
 };
 
 struct RaceCard : Card {
@@ -117,7 +118,7 @@ struct RaceCard : Card {
 	string bonus1;
 	string bonus2;
 
-	string print() { return (title + "   " + cardTypes[cardType] + "\n"); }
+	string print() { return (cardTypes[cardType] + "   " + title + "\n"); }
 };
 
 struct ItemCard : Card {
@@ -131,7 +132,7 @@ struct ItemCard : Card {
 	int value;
 	int bonus;
 
-	string print() { return (title + "   " + cardTypes[cardType] +
+	string print() { return (cardTypes[cardType] + "   " + title +
 		"   Bonus: +" + to_string(bonus) + "\n"); }
 };
 
@@ -140,8 +141,8 @@ struct OneShotCard : Card {
 	int value;
 	int bonus;
 
-	string print() { return (title + "   " + cardTypes[cardType] +
-		(goUpLevel ? "   Go Up a Level" : "   Value : $" + to_string(value) + 
+	string print() { return (cardTypes[cardType] + "   " + title +
+		(goUpLevel ? "   Go Up a Level" : "   Value: $" + to_string(value) + 
 			"   Bonus: +" + to_string(bonus) ) +"\n"); }
 };
 
