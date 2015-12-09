@@ -142,8 +142,7 @@ struct OneShotCard : Card {
 	int bonus;
 
 	string print() { return (cardTypes[cardType] + "   " + title +
-		(goUpLevel ? "   Go Up a Level" : "   Value: $" + to_string(value) + 
-			"   Bonus: +" + to_string(bonus) ) +"\n"); }
+		(goUpLevel ? "   Go Up a Level" : "   Bonus: +" + to_string(bonus) ) +"\n"); }
 };
 
 #endif

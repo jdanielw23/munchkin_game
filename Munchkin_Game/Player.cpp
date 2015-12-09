@@ -86,7 +86,7 @@ void Player::beginTurn(Game &currentGame)
 				if ((*oneShot).goUpLevel)
 				{
 					goUpLevel();
-					discardCard(oneShot);
+					(*currentGame.getDiscardedTreasureCards()).addCard(discardCard(oneShot));
 					cout << "\t\tUse Go Up A Level Card: " + (*oneShot).title + "\n";
 				}
 			}
@@ -190,7 +190,7 @@ void Player::beginTurn(Game &currentGame)
 			case Card::CardType::ONE_SHOT:
 			{
 				goUpLevel();
-				discardCard(selectedCard);
+				(*currentGame.getDiscardedTreasureCards()).addCard(discardCard(selectedCard));
 				cout << "\t\tUsed Go Up A Level Card: " << (*selectedCard).title << "\n";
 				break;
 			}
@@ -365,14 +365,73 @@ void Player::enterBattlePhase(Game &currentGame, MonsterCard *monster)
 		}
 		else if ((getBattleStrength() + getModdableAmount()) > monsterStrength)
 		{
-			//FILL IN HERE***********
-			cout << "\n\nMODDABLE AMOUNT WAS GREATER BUT STILL NEED TO IMPLEMENT THIS CODE.\n\n";
+			//****************************************************************************
+			int modAmount = 0;
+			string selection = "";
+			bool winning = false;
+
+			do
+			{
+				cout << "\tYou're Losing! Battle Strength: " + to_string(getBattleStrength() + modAmount) << endl;
+				cout << "\tHere's what you can do: " << endl;
+				map<int, int> usableCards = printUsableCardsInHand();
+
+				cout << "Enter the number of the card to use or type \"lose\" to give up: ";
+				getline(cin, selection);
+
+				istringstream iss(selection);
+				int key = 0;
+				iss >> key;
+
+				while (!(selection == "lose") && (usableCards.count(key) == 0))
+				{
+					cout << "Invalid Input. Try again: ";
+					getline(cin, selection);
+					istringstream newISS(selection);
+					newISS.str(selection);
+					newISS >> key;
+				}
+				if (selection == "lose")
+				{
+					loseBattle(currentGame, monster);
+				}
+				else
+				{
+					OneShotCard *oneShot = dynamic_cast<OneShotCard*>(cardsInHand[usableCards[key]]);
+					if ((*oneShot).goUpLevel)
+					{
+						goUpLevel();
+						cout << "\t\tPlayer Used Go Up a Level Card: " + (*oneShot).title << endl;
+					}
+					else
+					{
+						modAmount += (*oneShot).bonus;
+						cout << "\t\tUsed a One Shot: +" + to_string((*oneShot).bonus) + " for player.\n";
+					}
+
+					(*currentGame.getDiscardedTreasureCards()).addCard(discardCard(oneShot));
+
+					//Allow other players to mod again
+					monsterStrength += currentGame.allowBattleMods(monsterStrength);
+
+					if ((getBattleStrength() + modAmount) > monsterStrength)
+					{
+						winning = true;
+						winBattle(currentGame, monster);
+						break;
+					}
+				}
+			} while (!winning);
+			//^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 		}
 		else
 		{
 			loseBattle(currentGame, monster);
 		};
 	}
+
+	//Discard Monster Card into discarded door cards;
+	(*currentGame.getDiscardedDoorCards()).addCard(currentGame.getCardInPlay());
 }
 
 void Player::loseBattle(Game &currentGame, MonsterCard *monster)
@@ -796,6 +855,16 @@ map<int,int> Player::printUsableCardsInHand()
 		case TurnPhase::DECIDING:
 		{
 			if ((*cardsInHand[i]).cardType == Card::CardType::MONSTER)
+			{
+				cout << to_string(itemNumber) + ". " + (*cardsInHand[i]).print();
+				cards[itemNumber] = i;
+				itemNumber++;
+			}
+			break;
+		}
+		case TurnPhase::IN_BATTLE:
+		{
+			if ((*cardsInHand[i]).cardType == Card::CardType::ONE_SHOT)
 			{
 				cout << to_string(itemNumber) + ". " + (*cardsInHand[i]).print();
 				cards[itemNumber] = i;

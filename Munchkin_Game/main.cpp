@@ -29,7 +29,7 @@ int main()
 	do
 	{
 		Game MunchkinGame;
-		MunchkinGame.beginAutoGame();
+		MunchkinGame.beginGame();
 		MunchkinGame.playGame();
 		cout << endl;
 
