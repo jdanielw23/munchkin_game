@@ -30,7 +30,6 @@ private:
 	ofstream myFile;
 	Deck doorDeck;
 	Deck treasureDeck;
-	Player player;
 
 	//PRIVATE FUNCTIONS
 	void printDoorDeckTest();

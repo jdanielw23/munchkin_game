@@ -27,16 +27,13 @@ class Game;
 class Player
 {
 public:
-	enum PlayerType { AI, HUMAN };
 	enum TurnPhase { EQUIPPING, IN_BATTLE, DECIDING, CHARITY, WAITING };
 
 	//CONSTRUCTORS
 	Player();
-	Player(string n, PlayerType p, Card::Gender g);
 
 	//ACCESSORS
 	string getName() { return name; }
-	PlayerType getPlayerType() { return playerType; }
 	bool isSuperMunchkin() { return bIsSuperMunchkin; }
 	bool isHalfBreed() { return bIsHalfBreed; }
 	bool hasBigItem() { return bHasBigItem; }
@@ -47,19 +44,18 @@ public:
 	vector<Card*> getEquippedCards() { return equippedCards; }
 	TurnPhase getTurnPhase() { return turnPhase; }
 
+	//SETTERS
+	void setName(string n) { name = n; }
+	void setGender(Card::Gender g) { gender = g; }
+
 	//ACTION FUNCTIONS
 	void receiveCard(Card* aCard);
 	Card* discardCard(Card* aCard);
 	void equipItem(ItemCard* aCard);
 	void equipClass(ClassCard* aCard);
 	void equipRace(RaceCard* aCard);
-
-	void beginTurn(Game &currentGame);
-	void enterBattlePhase(Game &currentGame, MonsterCard *monster);
-	void enterDecidingPhase(Game &currentGame);
-	void enterCharityPhase(Game &currentGame);
 	void loseBattle(Game &currentGame, MonsterCard *monster);
-	void winBattle(Game &currentGame, MonsterCard *monster);	//return true if player has reached level 10
+	void winBattle(Game &currentGame, MonsterCard *monster);
 
 	//BAD STUFF FUNCTIONS
 	bool loseItem(Game &currentGame, Card::SlotType slot);	//return true if item was lost
@@ -68,16 +64,27 @@ public:
 	void setTurnPhase(TurnPhase phase) { turnPhase = phase; }
 	int getMonsterStrength(MonsterCard *monster);
 	int getModdableAmount();
-
 	bool operator!=(const Player &p);
 
-private:
+	//VIRTUAL FUNCTIONS
+	virtual void beginTurn(Game &currentGame) {}
+	virtual void enterBattlePhase(Game &currentGame, MonsterCard *monster) {}
+	virtual void enterDecidingPhase(Game &currentGame) {}
+	virtual void enterCharityPhase(Game &currentGame) {}
+	virtual void beefMeUp(int &playerStrength) {}
+	virtual bool playerWillMod(const int playerLevel, const int modsNeeded) { return false; }
+
+protected:
 	const int MAX_LEVEL = 10;
 	const int MIN_LEVEL = 1;
 
 	//DATA MEMBERS
 	string name;
-	PlayerType playerType;
+	int level;
+	int gear;
+	bool bIsSuperMunchkin;	//a card that allows two classes
+	bool bIsHalfBreed;		//a card that allows two races
+	bool bHasBigItem;
 
 	vector<Card*> cardsInHand;
 	vector<Card*> equippedCards;
@@ -90,22 +97,16 @@ private:
 	map<Card::SlotType, bool> equippedSlots;
 	TurnPhase turnPhase;
 
-	bool bIsSuperMunchkin;	//a card that allows two classes
-	bool bIsHalfBreed;		//a card that allows two races
-	bool bHasBigItem;
-
-	int gear;
-	int level;
-
 	//PRIVATE FUNCTIONS	
 	void goUpLevel();		//Don't go higher than level 10
 	void goDownLevel();		//Don't go lower than level 1
 	bool equipItemIsAllowed(const ItemCard &aCard);
 	bool equipClassIsAllowed(const ClassCard &aCard);
 	bool equipRaceIsAllowed(const RaceCard &aCard);
+	void equipCard(Game &currentGame, Card* card);
 	map<int, int> printUsableCardsInHand();
-	int beefMeUp(int strengthNeeded);	//returns mod amount
 	void printOneShotCards();
+	void printEquippedCards();
 
 };
 

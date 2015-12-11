@@ -13,12 +13,10 @@
 #include <vector>
 #include <string>
 #include <iostream>
-#include "Player.h"
 #include "Deck.h"
 #include "Card.h"
 
 using namespace std;
-
 
 class Player;
 
@@ -31,7 +29,7 @@ public:
 
 	//ACCESSORS
 	int getCurrentPlayerTurn() { return playerTurn; }	//Move to private later
-	Player* getCurrentPlayer() { return &players[playerTurn]; }
+	Player* getCurrentPlayer() { return players[playerTurn]; }
 	Deck* getDiscardedTreasureCards() { return &discardedTreasureCards; }
 	Deck* getDiscardedDoorCards() { return &discardedDoorCards; }
 	Deck* getTreasureDeck() { return &treasureDeck; }
@@ -43,7 +41,7 @@ public:
 	void setCardInPlay(Card *aCard) { cardInPlay = aCard; }
 
 	//USEFUL FUNCTIONS
-	void addPlayer(Player player);
+	void addPlayer(Player *player);
 	void dealCards();
 	void beginAutoGame();		//Hopefully just for testing
 	void beginGame();		//Hopefully just for testing
@@ -59,7 +57,7 @@ public:
 
 private:
 	const int CARDS_TO_DEAL = 4;
-	vector<Player> players;
+	vector<Player*> players;
 	Deck treasureDeck;
 	Deck doorDeck;
 	Deck discardedDoorCards;

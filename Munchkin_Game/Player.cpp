@@ -31,408 +31,9 @@ Player::Player()
 	equippedSlots[Card::SlotType::ARMOR] = false;
 }
 
-// Constructor for a player that accepts arguments
-Player::Player(string n, PlayerType p, Card::Gender g) : Player()
-{
-	name = n;
-	playerType = p;
-	gender = g;
-}
+
 
 //***************     PUBLIC FUNCTIONS     ************************
-
-// Start a player's turn
-void Player::beginTurn(Game &currentGame)
-{
-	setTurnPhase(TurnPhase::EQUIPPING);
-
-	cout << "\tEquipping\n";
-
-	if (playerType == PlayerType::AI)
-	{
-		//In Equipping Phase; if we can equip an item, than do it for all card types
-		for (unsigned i = 0; i < cardsInHand.size(); i++)
-		{
-			if ((*cardsInHand[i]).cardType == Card::CardType::ITEM)
-			{
-				ItemCard *item = dynamic_cast<ItemCard*>(cardsInHand[i]);
-				if (equipItemIsAllowed(*item))
-				{
-					equipItem(item);
-					cout << "\t\tEquipped Item: " + (*item).title + " " + to_string((*item).bonus) + "\n";
-				}
-			}
-			else if ((*cardsInHand[i]).cardType == Card::CardType::CLASS)
-			{
-				ClassCard *classCard = dynamic_cast<ClassCard*>(cardsInHand[i]);
-				if (equipClassIsAllowed(*classCard))
-				{
-					equipClass(classCard);
-					cout << "\t\tEquipped Class: " + (*classCard).title + "\n";
-				}
-			}
-			else if ((*cardsInHand[i]).cardType == Card::CardType::RACE)
-			{
-				RaceCard *raceCard = dynamic_cast<RaceCard*>(cardsInHand[i]);
-				if (equipRaceIsAllowed(*raceCard))
-				{
-					equipRace(raceCard);
-					cout << "\t\tEquipped Race: " + (*raceCard).title + "\n";
-				}
-			}
-			else if ((*cardsInHand[i]).cardType == Card::CardType::ONE_SHOT)
-			{
-				OneShotCard *oneShot = dynamic_cast<OneShotCard*>(cardsInHand[i]);
-				if ((*oneShot).goUpLevel)
-				{
-					goUpLevel();
-					(*currentGame.getDiscardedTreasureCards()).addCard(discardCard(oneShot));
-					cout << "\t\tUse Go Up A Level Card: " + (*oneShot).title + "\n";
-				}
-			}
-		}
-
-		//Bust down the door
-		Card *currentCard = currentGame.bustDownDoor();
-
-		if ((*currentCard).cardType == Card::CardType::MONSTER)
-		{
-			MonsterCard *monster = dynamic_cast<MonsterCard*>(currentCard);
-
-			cout << "\tEntering battle with " + (*monster).title + "\n";
-			enterBattlePhase(currentGame, monster);
-		}
-		else
-		{
-			cardsInHand.push_back(currentCard);	//Add card to player's hand
-
-			cout << "\tNot a monster.\n";
-			enterDecidingPhase(currentGame);
-		}
-	}
-	else
-	{
-		//****************************************************//
-		//				      PLAYER LOGIC                    //
-		//****************************************************//
-
-		bool doneEquipping = false;
-
-		// Allow the player to keep equipping items until we are done
-		while (!doneEquipping)
-		{
-			// Print the cards the player has in their hand
-			cout << endl << "Equippable Cards: " << endl;
-			
-			string chosenCard = "";
-			map<int, int> usableCards = printUsableCardsInHand();
-
-			// Print the player's equipped cards
-			cout << "\nEquipped Cards:" << endl;
-			if (equippedCards.size() == 0)
-				cout << "(none)" << endl;
-			else
-			{
-				for (unsigned i = 0; i < equippedCards.size(); i++)
-				{
-					cout << "\t" << (*equippedCards[i]).print();
-				};
-				cout << endl;
-			}
-
-			cout << "\nEnter the number of the card to equip (when finished, type \"done\"): " << endl;
-			getline(cin, chosenCard);
-
-			istringstream iss(chosenCard);
-			int key = 0;
-			iss >> key;
-
-			//VALIDATE INPUT
-			while (!(chosenCard == "done") && (usableCards.count(key) == 0))
-			{
-				cout << "Invalid Input. Try again: ";
-				getline(cin, chosenCard);
-				istringstream newISS(chosenCard);
-				newISS.str(chosenCard);
-				newISS >> key;
-			}
-
-			if (chosenCard == "done")
-			{
-				doneEquipping = true;
-				break;
-			}
-
-			Card* selectedCard = cardsInHand[usableCards[stoi(chosenCard)]];
-			switch ((*selectedCard).cardType)
-			{
-			case Card::CardType::ITEM:
-			{
-				ItemCard *item = dynamic_cast<ItemCard*>(selectedCard);
-				equipItem(item);
-				cout << "\t\tEquipped Item: " << (*item).print();
-				break;
-			}
-			case Card::CardType::CLASS:
-			{
-				ClassCard *classCard = dynamic_cast<ClassCard*>(selectedCard);
-				equipClass(classCard);
-				cout << "\t\tEquipped Class: " << (*classCard).print();
-				break;
-			}
-			case Card::CardType::RACE:
-			{
-				RaceCard *raceCard = dynamic_cast<RaceCard*>(selectedCard);
-				equipRace(raceCard);
-				cout << "\t\tEquipped Race: " << (*raceCard).print();
-				break;
-			}
-			case Card::CardType::ONE_SHOT:
-			{
-				goUpLevel();
-				(*currentGame.getDiscardedTreasureCards()).addCard(discardCard(selectedCard));
-				cout << "\t\tUsed Go Up A Level Card: " << (*selectedCard).title << "\n";
-				break;
-			}
-			}
-
-		}
-
-		//Bust down the door
-		Card *currentCard = currentGame.bustDownDoor();
-
-		if ((*currentCard).cardType == Card::CardType::MONSTER)
-		{
-			MonsterCard *monster = dynamic_cast<MonsterCard*>(currentCard);
-
-			cout << "\tEntering battle with " + (*monster).title + "\n";
-			enterBattlePhase(currentGame, monster);
-		}
-		else
-		{
-			cardsInHand.push_back(currentCard);	//Add card to player's hand
-
-			cout << "\tNot a monster.\n";
-			enterDecidingPhase(currentGame);
-		}
-	}
-}
-
-
-void Player::enterBattlePhase(Game &currentGame, MonsterCard *monster)
-{
-	setTurnPhase(TurnPhase::IN_BATTLE);
-	if (playerType == PlayerType::AI)
-	{
-		int monsterStrength = getMonsterStrength(monster);
-
-		cout << "\t\tPlayer " + to_string(getBattleStrength()) + "\t vs \t" + (*monster).title + " " + to_string(monsterStrength) + "\n";
-
-		if (getBattleStrength() > monsterStrength)
-		{
-			monsterStrength += currentGame.allowBattleMods(monsterStrength);
-
-			if (getBattleStrength() > monsterStrength)
-			{
-				winBattle(currentGame, monster);
-			}
-			else if ((getBattleStrength() + getModdableAmount()) > monsterStrength)
-			{
-				int modAmount = 0;
-
-				//Play his own cards to beef himself up
-				for (unsigned j = 0; j < getCardsInHand().size(); j++)
-				{
-					if ((*getCardsInHand()[j]).cardType == Card::CardType::ONE_SHOT)
-					{
-						//Discard each one shot card that the player just used
-						OneShotCard *oneShot = dynamic_cast<OneShotCard*>(getCardsInHand()[j]);
-
-						if (!(*oneShot).goUpLevel)
-						{
-							modAmount += (*oneShot).bonus;
-							(*currentGame.getDiscardedTreasureCards()).addCard(discardCard(oneShot));
-							j -= 1;	//Repair index if one card was removed. This might not work correctly.**********************
-
-							cout << "\t\t\tUsed a One Shot: +" + to_string((*oneShot).bonus) + " for player.\n";
-							if ((getBattleStrength() + modAmount) > monsterStrength)
-								break;
-						}
-					}
-				}
-				winBattle(currentGame, monster);
-			}
-			else
-				loseBattle(currentGame, monster);
-		}
-		else if ((getBattleStrength() + getModdableAmount()) > monsterStrength)
-		{
-			int modAmount = 0;
-			//Play his own cards to beef himself up
-			for (unsigned j = 0; j < getCardsInHand().size(); j++)
-			{
-				if ((*getCardsInHand()[j]).cardType == Card::CardType::ONE_SHOT)
-				{
-					//Discard each one shot card that the player just used
-					OneShotCard *oneShot = dynamic_cast<OneShotCard*>(getCardsInHand()[j]);
-
-					if (!(*oneShot).goUpLevel)
-					{
-						modAmount += (*oneShot).bonus;
-						(*currentGame.getDiscardedTreasureCards()).addCard(discardCard(oneShot));
-						j -= 1;	//Repair index if one card was removed. This might not work correctly.**********************
-
-						cout << "\t\t\tUsed a One Shot: +" + to_string((*oneShot).bonus) + " for player.\n";
-						if ((getBattleStrength() + modAmount) > monsterStrength)
-							break;
-					}
-				}
-			}
-			winBattle(currentGame, monster);
-		}
-		else
-			loseBattle(currentGame, monster);
-	}
-	else
-	{
-		/*
-		TODO: Player needs to be able to use one-shot cards to beef himself up if necessary
-		TODO: The computer also needs to have a chance to beef up the monster
-		*/
-
-		int monsterStrength = getMonsterStrength(monster);
-		string nameOfOneShotCard = "";
-		bool found = false;
-
-		cout << "\t\tPlayer " << to_string(getBattleStrength()) << "\t vs \t" << (*monster).title << " " << to_string(monsterStrength) << "\n";
-
-		if (getBattleStrength() > monsterStrength)
-		{
-			monsterStrength += currentGame.allowBattleMods(monsterStrength);
-
-			if (getBattleStrength() > monsterStrength)
-			{
-				winBattle(currentGame, monster);
-			}
-			else if ((getBattleStrength() + getModdableAmount()) > monsterStrength)
-			{
-				int modAmount = 0;
-				//Play his own cards to beef himself up
-				OneShotCard *oneShot = NULL;
-
-				cout << "One Shot Cards:" << endl;
-				for (unsigned i = 0; i < cardsInHand.size(); i++)
-				{
-					if ((*cardsInHand[i]).cardType == Card::CardType::ONE_SHOT)
-					{
-						cout << "\t" << (*cardsInHand[i]).title << endl;
-					}
-				};
-
-				while (!found)
-				{
-					cout << "Pick a one shot card to use (or type \"none\" to skip): ";
-					getline(cin, nameOfOneShotCard);
-					found = false;
-
-					for (unsigned i = 0; i < cardsInHand.size(); i++)
-					{
-						if ((*cardsInHand[i]).cardType == Card::CardType::ONE_SHOT && (*cardsInHand[i]).title == nameOfOneShotCard)
-						{
-							oneShot = dynamic_cast<OneShotCard*>(getCardsInHand()[i]);
-							found = true;
-						}
-					};
-
-					if (!found)
-					{
-						cout << "You don't have a One Shot card called \"" << nameOfOneShotCard << "\". Try again..." << endl;
-					}
-				};
-
-				if (!(*oneShot).goUpLevel)
-				{
-					modAmount += (*oneShot).bonus;
-					(*currentGame.getDiscardedTreasureCards()).addCard(discardCard(oneShot));
-
-					cout << "\t\t\tUsed a One Shot: +" + to_string((*oneShot).bonus) + " for player.\n";
-					if ((getBattleStrength() + modAmount) > monsterStrength)
-						winBattle(currentGame, monster);
-				}
-			}
-			else
-				loseBattle(currentGame, monster);
-		}
-		else if ((getBattleStrength() + getModdableAmount()) > monsterStrength)
-		{
-			//****************************************************************************
-			int modAmount = 0;
-			string selection = "";
-			bool winning = false;
-
-			do
-			{
-				cout << "\tYou're Losing! Battle Strength: " + to_string(getBattleStrength() + modAmount) << endl;
-				cout << "\tHere's what you can do: " << endl;
-				map<int, int> usableCards = printUsableCardsInHand();
-
-				cout << "Enter the number of the card to use or type \"lose\" to give up: ";
-				getline(cin, selection);
-
-				istringstream iss(selection);
-				int key = 0;
-				iss >> key;
-
-				while (!(selection == "lose") && (usableCards.count(key) == 0))
-				{
-					cout << "Invalid Input. Try again: ";
-					getline(cin, selection);
-					istringstream newISS(selection);
-					newISS.str(selection);
-					newISS >> key;
-				}
-				if (selection == "lose")
-				{
-					loseBattle(currentGame, monster);
-				}
-				else
-				{
-					OneShotCard *oneShot = dynamic_cast<OneShotCard*>(cardsInHand[usableCards[key]]);
-					if ((*oneShot).goUpLevel)
-					{
-						goUpLevel();
-						cout << "\t\tPlayer Used Go Up a Level Card: " + (*oneShot).title << endl;
-					}
-					else
-					{
-						modAmount += (*oneShot).bonus;
-						cout << "\t\tUsed a One Shot: +" + to_string((*oneShot).bonus) + " for player.\n";
-					}
-
-					(*currentGame.getDiscardedTreasureCards()).addCard(discardCard(oneShot));
-
-					//Allow other players to mod again
-					monsterStrength += currentGame.allowBattleMods(monsterStrength);
-
-					if ((getBattleStrength() + modAmount) > monsterStrength)
-					{
-						winning = true;
-						winBattle(currentGame, monster);
-						break;
-					}
-				}
-			} while (!winning);
-			//^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-		}
-		else
-		{
-			loseBattle(currentGame, monster);
-		};
-	}
-
-	//Discard Monster Card into discarded door cards;
-	(*currentGame.getDiscardedDoorCards()).addCard(currentGame.getCardInPlay());
-}
 
 void Player::loseBattle(Game &currentGame, MonsterCard *monster)
 {
@@ -522,133 +123,6 @@ void Player::winBattle(Game &currentGame, MonsterCard *monster)
 	enterCharityPhase(currentGame);
 }
 
-void Player::enterDecidingPhase(Game &currentGame)
-{
-	setTurnPhase(TurnPhase::DECIDING);
-
-	bool lookForTrouble = false;
-
-	if (playerType == PlayerType::AI)
-	{
-		//If we can, look for trouble
-		for (unsigned i = 0; i < cardsInHand.size(); i++)
-		{
-			if ((*cardsInHand[i]).cardType == Card::CardType::MONSTER)
-			{
-				MonsterCard *monster = dynamic_cast<MonsterCard*>(cardsInHand[i]);
-				if (getMonsterStrength(monster) < getBattleStrength())
-				{
-					cardsInHand.erase(cardsInHand.begin() + i);
-					currentGame.setCardInPlay(monster);
-					lookForTrouble = true;
-					break;
-				}
-			}
-		}
-		//Otherwise, Loot the room
-		if (!lookForTrouble)
-		{
-			if ((*currentGame.getDoorDeck()).isEmpty())
-				currentGame.resetDoorDeck();
-			cardsInHand.push_back((*currentGame.getDoorDeck()).dealCard());
-
-			cout << "\t****   LOOT THE ROOM   ****\n";
-			enterCharityPhase(currentGame);
-		}
-		else
-		{
-			MonsterCard *monster = dynamic_cast<MonsterCard*>(currentGame.getCardInPlay());
-
-			cout << "\t****   LOOK FOR TROUBLE   ****\n";
-			enterBattlePhase(currentGame, monster);
-		}
-	}
-	else
-	{
-		string selection = "";
-
-		cout << "\t****   DECIDING PHASE   ****" << endl;
-		cout << "Available Monsters: " << endl;
-		map<int, int> usableMonsters = printUsableCardsInHand();
-		cout << endl;
-
-		cout << "Available One Shot Cards: " << endl;
-		printOneShotCards();
-		cout << endl;
-
-		cout << "My Strength: " + to_string(getBattleStrength()) << endl;
-
-		cout << "Enter the number of the monster to battle or type \"loot\" to Loot the Room." << endl;
-		cout << "Make your choice: ";
-		getline(cin, selection);
-
-		istringstream iss(selection);
-		int key = 0;
-		iss >> key;
-
-		while ( !(selection == "loot") && (usableMonsters.count(key) == 0))
-		{
-			cout << "Invalid Input. Try again: ";
-			getline(cin, selection);
-			istringstream newISS(selection);
-			newISS.str(selection);
-			newISS >> key;
-		}
-
-		if (selection == "loot")
-		{
-			if ((*currentGame.getDoorDeck()).isEmpty())
-				currentGame.resetDoorDeck();
-			Card *cardReceived = (*currentGame.getDoorDeck()).dealCard();
-			cardsInHand.push_back(cardReceived);
-
-			cout << "\t****   LOOT THE ROOM   ****\n";
-			cout << "\t\tCard Received: " + (*cardReceived).print() << endl;
-			enterCharityPhase(currentGame);
-		}
-		else
-		{
-			cout << "\t****   LOOK FOR TROUBLE   ****\n";
-			MonsterCard *monster = dynamic_cast<MonsterCard*>(cardsInHand[usableMonsters[key]]);
-			discardCard(monster);
-			currentGame.setCardInPlay(monster);
-			enterBattlePhase(currentGame, monster);
-		}
-	}
-}
-
-void Player::enterCharityPhase(Game &currentGame)
-{
-	setTurnPhase(TurnPhase::CHARITY);
-
-	cout << "\t****   CHARITY PHASE   ****\n";
-	cout << "\t\tAUTO CHARITY\n";
-
-	unsigned maxCards = 5;
-	if (race1 == Card::RaceType::DWARF || race2 == Card::RaceType::DWARF)
-		maxCards = 6;
-	
-	if (playerType == PlayerType::AI || playerType == PlayerType::HUMAN)	//TODO: should only be AI
-	{
-		while (cardsInHand.size() > maxCards)
-		{
-			Card *card = cardsInHand.front();
-			cardsInHand.erase(cardsInHand.begin());
-			if ((*card).cardType == Card::CardType::ITEM ||
-				(*card).cardType == Card::CardType::ONE_SHOT)
-				(*currentGame.getDiscardedTreasureCards()).addCard(card);
-			else
-				(*currentGame.getDiscardedDoorCards()).addCard(card);
-		}
-	}
-	else
-	{
-		//TODO: Make different action for human player
-	}
-
-	setTurnPhase(TurnPhase::WAITING);
-	currentGame.setGameIsOver(currentGame.isGameOver());
-}
 
 void Player::equipItem(ItemCard* aCard)
 {
@@ -980,19 +454,6 @@ bool Player::equipRaceIsAllowed(const RaceCard &aCard)
 		return false;
 }
 
-int Player::beefMeUp(int strengthNeeded)
-{
-	int modAmount = 0;
-
-	//View My strength vs Monster Strength
-	//Get Usable One shot cards
-	//Select cards to use
-	//Allow other players to mess with me
-	//Return modAmount
-
-	return modAmount;
-}
-
 void Player::printOneShotCards()
 {
 	for (unsigned i = 0; i < cardsInHand.size(); i++)
@@ -1001,5 +462,56 @@ void Player::printOneShotCards()
 		{
 			cout << (*cardsInHand[i]).print();
 		}
+	}
+}
+
+void Player::printEquippedCards()
+{
+	if (equippedCards.size() == 0)
+		cout << "(none)" << endl;
+	else
+	{
+		for (unsigned i = 0; i < equippedCards.size(); i++)
+		{
+			cout << "\t" << (*equippedCards[i]).print();
+		}
+		cout << endl;
+	}
+}
+
+void Player::equipCard(Game &currentGame, Card* card)
+{
+	switch ((*card).cardType)
+	{
+	case Card::CardType::ITEM:
+	{
+		ItemCard *item = dynamic_cast<ItemCard*>(card);
+		equipItem(item);
+		cout << "\t\tEquipped Item: " << (*item).print();
+		break;
+	}
+	case Card::CardType::CLASS:
+	{
+		ClassCard *classCard = dynamic_cast<ClassCard*>(card);
+		equipClass(classCard);
+		cout << "\t\tEquipped Class: " << (*classCard).print();
+		break;
+	}
+	case Card::CardType::RACE:
+	{
+		RaceCard *raceCard = dynamic_cast<RaceCard*>(card);
+		equipRace(raceCard);
+		cout << "\t\tEquipped Race: " << (*raceCard).print();
+		break;
+	}
+	case Card::CardType::ONE_SHOT:
+	{
+		goUpLevel();
+		(*currentGame.getDiscardedTreasureCards()).addCard(discardCard(card));
+		cout << "\t\tUsed Go Up A Level Card: " << (*card).title << "\n";
+		break;
+	}
+	default:
+		break;
 	}
 }

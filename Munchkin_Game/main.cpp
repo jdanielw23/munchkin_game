@@ -24,7 +24,7 @@ using namespace std;
 int main()
 {
 	string playAgain = "";
-
+	
 	// Declare our game class
 	do
 	{

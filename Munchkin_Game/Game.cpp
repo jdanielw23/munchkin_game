@@ -9,6 +9,8 @@
 */
 
 #include "Game.h"
+#include "AI.h"
+#include "Human.h"
 
 // Default Constructor
 Game::Game()
@@ -36,7 +38,7 @@ Game::Game()
 }
 
 // Add a player to the list of players
-void Game::addPlayer(Player p)
+void Game::addPlayer(Player *p)
 {
 	players.push_back(p);
 }
@@ -51,7 +53,7 @@ void Game::beginAutoGame()
 	// Add players to the list according to number of AI players
 	for (int i = 0; i < NUM_PLAYERS; i++)
 	{
-		Player comp = Player("Computer" + to_string(i + 1), Player::PlayerType::AI, Card::Gender::MALE);
+		AI *comp = new AI("Computer" + to_string(i + 1),Card::Gender::MALE);
 		addPlayer(comp);
 	}
 
@@ -68,13 +70,13 @@ void Game::beginGame()
 	// Add players to the list according to number of AI players
 	for (int i = 0; i < NUM_PLAYERS; i++)
 	{
-		Player comp = Player("Computer" + to_string(i + 1), Player::PlayerType::AI, Card::Gender::MALE);
+		AI *comp = new AI("Computer" + to_string(i + 1), Card::Gender::MALE);
 		addPlayer(comp);
 	}
 
 	// Add a Human Player
-	Player comp = Player("Player", Player::PlayerType::HUMAN, Card::Gender::MALE);
-	addPlayer(comp);
+	Human *player = new Human("Player",Card::Gender::MALE);
+	addPlayer(player);
 
 	dealCards();
 }
@@ -87,7 +89,6 @@ void Game::playGame()
 	// loop until game is done
 	while (!gameIsOver)
 	{
-
 		// Print out player info
 		cout << "\nCurrent Player: " << (*getCurrentPlayer()).getName() <<
 			"\tLevel: " << to_string((*getCurrentPlayer()).getLevel()) <<
@@ -107,9 +108,9 @@ void Game::playGame()
 // Move and begin next player's turn.
 int Game::nextPlayersTurn()
 {
-	players[playerTurn].setTurnPhase(Player::TurnPhase::WAITING);	//End current player's turn
+	(*players[playerTurn]).setTurnPhase(Player::TurnPhase::WAITING);	//End current player's turn
 	playerTurn = (playerTurn + 1) % numPlayers;	//Move to next player
-	players[playerTurn].setTurnPhase(Player::TurnPhase::EQUIPPING);	//Begin new player's turn
+	(*players[playerTurn]).setTurnPhase(Player::TurnPhase::EQUIPPING);	//Begin new player's turn
 
 	return playerTurn;
 }
@@ -123,8 +124,8 @@ void Game::dealCards()
 		{
 			if (!doorDeck.isEmpty() && !treasureDeck.isEmpty())
 			{
-				players[i].receiveCard(doorDeck.dealCard());
-				players[i].receiveCard(treasureDeck.dealCard());
+				(*players[i]).receiveCard(doorDeck.dealCard());
+				(*players[i]).receiveCard(treasureDeck.dealCard());
 			}
 		}
 		
@@ -173,28 +174,28 @@ int Game::allowBattleMods(int monsterStrength)
 
 	for (unsigned i = 0; i < players.size(); i++)	//Give each player a chance to modify
 	{
-		if (players[i].getPlayerType() == Player::PlayerType::AI && players[i] != (*getCurrentPlayer()))	//AI actions
+		if ((*players[i]) != (*getCurrentPlayer()))	//AI actions
 		{
-			int ableToAdd = players[i].getModdableAmount();
+			int ableToAdd = (*players[i]).getModdableAmount();
 			int neededToStopPlayer = (*getCurrentPlayer()).getBattleStrength() - newMonsterStrength;
 
 			if ((*getCurrentPlayer()).getLevel() > 5 && ableToAdd >= neededToStopPlayer)		//Don't waste modifiers if player is less than level 5
 			{
-				for (unsigned j = 0; j < players[i].getCardsInHand().size(); j++)
+				for (unsigned j = 0; j < (*players[i]).getCardsInHand().size(); j++)
 				{
-					if ((*players[i].getCardsInHand()[j]).cardType == Card::CardType::ONE_SHOT)
+					if ((*(*players[i]).getCardsInHand()[j]).cardType == Card::CardType::ONE_SHOT)
 					{
 						//Discard each one shot card that the player just used
-						OneShotCard *oneShot = dynamic_cast<OneShotCard*>(players[i].getCardsInHand()[j]);
+						OneShotCard *oneShot = dynamic_cast<OneShotCard*>((*players[i]).getCardsInHand()[j]);
 
 						if (!(*oneShot).goUpLevel)
 						{
 							newMonsterStrength += (*oneShot).bonus;
 							monsterMods += (*oneShot).bonus;
-							discardedTreasureCards.addCard(players[i].discardCard(oneShot));
+							discardedTreasureCards.addCard((*players[i]).discardCard(oneShot));
 							j -= 1;	//Repair index if one card was removed. This might not work correctly.**********************
 
-							cout << "\t\t\t" + players[i].getName() + " Used a One Shot: +" + to_string((*oneShot).bonus) + " for monster.\n";
+							cout << "\t\t\t" + (*players[i]).getName() + " Used a One Shot: +" + to_string((*oneShot).bonus) + " for monster.\n";
 							cout << "\t\t\t\tNew Monster Strength: " + to_string(newMonsterStrength) + "\n";
 							if (newMonsterStrength > (*getCurrentPlayer()).getBattleStrength())
 							{
@@ -220,7 +221,7 @@ bool Game::isGameOver()
 
 	for (int i = 0; i < numPlayers; i++)
 	{
-		if (players[i].getLevel() >= WINNING_LEVEL)
+		if ( (*players[i]).getLevel() >= WINNING_LEVEL)
 			return true;
 	}
 
@@ -233,8 +234,8 @@ string Game::getWinningPlayer()
 
 	for (int i = 0; i < numPlayers; i++)
 	{
-		if (players[i].getLevel() == WINNING_LEVEL)
-			return players[i].getName();
+		if ( (*players[i]).getLevel() == WINNING_LEVEL)
+			return (*players[i]).getName();
 	}
 
 	return "NOBODY";
